@@ -1,8 +1,4 @@
-import {
-  handleError,
-  handleLoadHolidaysSuccess,
-  initializeUI,
-} from './page.js';
+import { handleError, handleLoadHolidaysSuccess, initializeUI } from './ui.js';
 
 /**
  * Performs a GET request to the specified URL.
@@ -31,16 +27,11 @@ function getRequest(url, onSuccess, onError) {
  * @param {number} year - The year to load holidays for
  */
 function loadHolidays(year) {
+  // TODO Complete this function to load holidays for the given year
   getRequest(
-    `https://date.nager.at/api/v3/publicholidays/${year}/NL`,
-    (data) => {
-      handleLoadHolidaysSuccess(data);
-      console.log('Holidays loaded:', data);
-    },
-    (error) => {
-      console.error('Error fetching data:', error);
-      handleError('Failed to load holidays. Please try again later.');
-    }
+    `url for endpoint`,
+    () => {},
+    () => {}
   );
 }
 
@@ -50,9 +41,6 @@ function loadHolidays(year) {
 function main() {
   // Initialize UI and set up event listeners
   initializeUI(loadHolidays);
-
-  console.log('Public Holidays API Demo initialized');
-  console.log('API Documentation: https://date.nager.at/');
 }
 
 window.addEventListener('load', main);
