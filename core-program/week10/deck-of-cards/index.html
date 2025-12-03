@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deck of Cards API Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🃏 Deck of Cards API</h1>
+        <p class="subtitle">Learn APIs by playing with cards!</p>
+      </header>
+
+      <div class="info-panel" id="deck-info">
+        <div class="info-item">
+          <span class="info-label">Cards Remaining:</span>
+          <span class="info-value" id="cards-remaining">-</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button type="button" id="new-deck-btn" class="btn btn-primary">
+          🎴 New Deck
+        </button>
+        <button
+          type="button"
+          id="draw-card-btn"
+          class="btn btn-secondary"
+          disabled
+        >
+          ✨ Draw 1 Card
+        </button>
+        <button
+          type="button"
+          id="draw-five-btn"
+          class="btn btn-secondary"
+          disabled
+        >
+          🎯 Draw 5 Cards
+        </button>
+        <button
+          type="button"
+          id="shuffle-btn"
+          class="btn btn-tertiary"
+          disabled
+        >
+          🔀 Shuffle Deck
+        </button>
+      </div>
+
+      <div class="loading" id="loading">Loading...</div>
+      <div class="error-message" id="error-message"></div>
+      <div class="toast" id="toast"></div>
+
+      <div id="cards-container"></div>
+    </div>
+
+    <script src="index.js" type="module"></script>
+  </body>
+</html>
