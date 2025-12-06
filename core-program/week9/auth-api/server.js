@@ -146,7 +146,11 @@ function start(app) {
   // Request logging middleware
   app.use((req, res, next) => {
     console.log(`\nReceived request: ${req.method} ${req.url}`);
-    console.log(`Request body: ${JSON.stringify(req.body, null, 2)}`);
+    if (req.body) {
+      console.log(`Request body: ${JSON.stringify(req.body, null, 2)}`);
+    } else {
+      console.log('Request body: <empty>');
+    }
     next();
   });
 
@@ -171,8 +175,14 @@ function start(app) {
   // Serve the front-end application from the `client` folder
   app.use(express.static('client'));
 
-  app.listen(3000, () => {
+  app.listen(3000, (err) => {
+    if (err) {
+      console.error('Failed to start server:', err);
+      process.exit(1);
+    }
     console.log('Server is running on port 3000');
+    console.log('Press CTRL+C to stop the server');
+    console.log('Client app available at http://localhost:3000');
   });
 }
 

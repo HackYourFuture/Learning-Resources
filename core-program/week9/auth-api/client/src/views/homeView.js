@@ -22,7 +22,6 @@ function createHomeView(props) {
         </ul>
         <h5>Welcome to the Authentication API Demo App</h5>
         <p>This is a simple application demonstrating user authentication using JWT.</p>
-        <h6>Your Profile Information:</h6>
         <p id="profile"></p>
       </div>
     </div>
