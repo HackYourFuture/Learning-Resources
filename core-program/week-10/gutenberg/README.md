@@ -191,8 +191,17 @@ The term _callback hell_ is often used to describe situations where multiple nes
 
 > This is an advanced topic and is included for educational purposes only. You can safely skip this example.
 
-This example implements a multi-threaded approach using the `worker_threads` module available in Node.js. Worker threads are not commonly used in typical Node.js applications and we do not recommend that you use them. We have included this example for educational purposes to demonstrate how multi-threading can take advantage of multiple CPU cores.
+This example implements a multi-threaded approach using the `worker_threads` module available in Node.js. Worker threads are not commonly used in typical Node.js applications and we do not recommend that you use them. We have included this example (generated with VSCode Copilot, see Author's note below) for educational purposes to demonstrate how multi-threading can take advantage of multiple CPU cores.
 
 JavaScript in Node.js is single-threaded by default, meaning that all code execution happens on a single thread. When using worker threads, each worker is gets its own JavaScript engine, running its own event loop and executing code independently. This allows us to distribute CPU-bound tasks, such as our text analysis, across multiple threads, thereby utilizing multiple CPU cores and improving performance.
 
 The execution time for this example is significantly lower than the other examples, approximately 350 milliseconds on a Mac Mini M4 Pro.
+
+<details>
+
+<summary>Author's note: Not having used worker threads myself before, I asked GitHub Copilot to generate this example on the basis of the `promise-all.js` implementation. Expand this section to see the prompt I used.</summary>
+
+<br>
+
+![copilot-prompt](../assets/worker-threads.png)
+</details>
