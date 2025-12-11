@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+// __dirname replacement for ES modules
 const __dirname = import.meta.dirname;
 
 import { analyze } from '../lib/analyze.js';

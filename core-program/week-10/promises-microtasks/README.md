@@ -4,7 +4,7 @@
 
 This article explains how promises, the event loop, and microtasks interact in JavaScript. It includes examples using both native promises and a custom `CustomPromise` class that logs internal events for better understanding. Key points:
 
-- Promises enqueue microtasks for `.then()` and `.catch()` callbacks, processed before tasks in the event loop.
+- Promises enqueue microtasks for `.then()` and `.catch()` callbacks, processed before other tasks in the event loop.
 - `.then()` and `.catch()` create new promises, chaining operations.
 - Provided examples demonstrate promise fulfillment, rejection, and microtask execution order.
 
@@ -20,7 +20,7 @@ Here, we explore how promises, the event loop, and microtasks work together in J
 
 This folder contains examples and explanations of how promises, the event loop, and microtasks work together in JavaScript.
 
-> **Note**: The goal of this section is to help you understand how promises work under the hood and how they interact with the event loop and microtasks. You do not need think in these terms when you use promises in your own code. However, understanding these concepts will help you better understand how JavaScript handles asynchronous operations and how to write more efficient and effective code.
+> **Note**: The goal of this section is to help you understand how promises work under the hood and how they interact with the event loop and microtasks. In your everyday programming, you do not need think in these terms when you use promises. However, understanding these concepts will help you better understand how JavaScript handles asynchronous operations and how to write more efficient and effective code.
 
 When a promise becomes settled (i.e., either `fulfilled` or `rejected`) _and_ a `.then()` was called on it, it creates a microtask and enqueues it in the microtask queue. This microtask runs the code inside `.then()` or `.catch()`. The event loop handles the microtask queue before the task queue, ensuring that promise callbacks are executed before any other tasks.
 
@@ -43,8 +43,7 @@ Notes:
 
 1. [`.catch()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch) is just syntactic sugar for `.then(null, onRejected)`, i.e. it is just a `.then()` in disguise.
 
-
-### Example 1
+## Example 1
 
 File: `resolved-chain.js`
 
@@ -107,9 +106,9 @@ then#2 43
 [microtask#3 end]
 ```
 
-#### Quick Facts
+### Quick Facts
 
-- Each `.then()` or `.catch()` method called on a promise returns a new promise. Whatever you return inside `.then()` or `.catch()` becomes the result of the next promise in the chain.<sup>[1]</sup>.
+- Each `.then()` or `.catch()` method called on a promise returns a new promise. Whatever you return inside `.then()` or `.catch()` becomes the result of the next promise in the chain.<sup>[1]</sup>. If you don't return anything, the next promise is fulfilled with `undefined`.
 - When a promise with a `.then()` becomes settled (i.e. fulfilled or rejected), it enqueues a microtask to schedule the processing of that `.then()`.
 - When the current code runs to completion, the event loop picks up the next microtask from the microtask queue and executes it.
 - The microtask queue is processed before the task queue, ensuring that promise callbacks are executed before any other tasks in the task queue.
@@ -118,11 +117,7 @@ Notes:
 
 1. If the `onFulfilled` or `onRejected` callback itself returns a promise, this promise will be used as the fulfillment value of the new promise. For more details, see the MDN documentation on [Promise.then()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then).
 
-
-![event loop](../assets/promise.png)
-<br><small>Figure 1: Promises, Event Loop and Microtasks</small>
-
-### Example 3
+## Example 2
 
 File: `rejected-chain.js`
 
@@ -180,3 +175,7 @@ catch#1 Something went wrong!
 [promise#4 fulfilled → undefined]
 [microtask#3 end]
 ```
+
+## Flowchart: Promises, Event Loop and Microtasks 
+
+![event loop](../.assets/promise.png)
