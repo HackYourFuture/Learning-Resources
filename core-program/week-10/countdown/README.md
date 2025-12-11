@@ -10,13 +10,15 @@ It provides two timer modes: a normal (non-blocking) mode using the standard `se
 
 ## Usage
 
-1. The example logs the countdown to the console, so please open the Developer Tools and select the Console tab when you run this example.
+1. Open the `index.html` file in a web browser (e.g., Chrome, Firefox, Edge).
 
-2. With the "Blocking" checkbox unchecked, click the "Start" button to start the timer. The timer will count down from 10 to 0, updating the displayed count every second. Let it run to completion and take note of the countdown in the developer console.
+2. The example logs the countdown to the console, so please open the Developer Tools and select the Console tab when you run this example.
 
-3. With the "Blocking" checkbox still unchecked, click the "Start" button again, and after a second or two, press the "Stop" button. Notice that the timer stops as expected.
+3. With the "Blocking" checkbox unchecked, click the "Start" button to start the timer. The timer will count down from 10 to 0, updating the displayed count every second. Let it run to completion and take note of the countdown in the developer console.
 
-4. Now, check the "Blocking" checkbox to use the blocking version of the timer. Press the "Start" button. Because JavaScript in the browser runs on a single-threaded event loop, blocking code prevents the browser from updating the UI or responding to user actions (e.g. "click" events). As a result, when the blocking timer is running:
+4. With the "Blocking" checkbox still unchecked, click the "Start" button again, and after a second or two, press the "Stop" button. Notice that the timer stops as expected.
+
+5. Now, check the "Blocking" checkbox to use the blocking version of the timer. Press the "Start" button. Because JavaScript in the browser runs on a single-threaded event loop, blocking code prevents the browser from updating the UI or responding to user actions (e.g. "click" events). As a result, when the blocking timer is running:
 
     - The "Start" button remains red (i.e., depressed).
     - The counter display does not update.
