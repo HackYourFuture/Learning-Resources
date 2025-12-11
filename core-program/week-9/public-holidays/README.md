@@ -37,17 +37,17 @@ Complete the implementation as follows:
 
 When you are done, load the `index.html` file in the browser. You should get something similar to this:
 
-![public-holidays-start](./assets/public-holidays-start.png)
+![public-holidays-start](../.assets/public-holidays-start.png)
 
 Open the browser's Developer Tools by pressing <kbd>F12</kbd> on Windows or Linux or <kbd>Fn</kbd> + <kbd>F12</kbd> on a Mac. Then, select the Network tab, as shown below:
 
-![network-tab-1](./assets/network-tab-1.png)
+![network-tab-1](../.assets/network-tab-1.png)
 
 We are interested in network requests that we make in our code with `Fetch`, so let's activate the `Fetch/XHR` filter as shown in the screenshot.
 
 Now press the **Load Holidays** button.If all is well, you should now see the holidays for the selected year displayed in the UI. In the network tab, you should see the request as in the screenshot below. (Note: you may see other requests in the network that are not related to this app but are caused by browser extensions that you may have installed. They are not important for our purpose.)
 
-![network-tab-2](./assets/network-tab-2.png)
+![network-tab-2](../.assets/network-tab-2.png)
 
 The request that we just made now appears in the network tab. From this, we can see the following:
 
@@ -64,7 +64,7 @@ The colored bars in the timeline represent the timing and stages of each network
 
 Next, click on the line of the network request. This will show more details for the request:
 
-![network-tab-3](./assets/network-tab-3.png)
+![network-tab-3](../.assets/network-tab-3.png)
 
 You can inspect the request and response **Headers**, **Preview** the returned content as parsed data, view the **Response** in its original format, and get more details about the **Initiator** of the request and about the **Timing**.
 

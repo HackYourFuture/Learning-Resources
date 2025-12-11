@@ -6,12 +6,11 @@ The application as delivered in the repository is incomplete, therefore you cann
 
 After you load the `index.html`, click on the **New Deck** button to create a new deck of cards.
 
-![new-deck](./assets/new-deck.gif)
+![new-deck](../.assets/new-deck.gif)
 
 Once the deck has been created, the other buttons are enabled. The functions of these buttons are self-explanatory. For instance, here is the result of clicking **Draw 5 Cards**:
 
-![draw-5](./assets/draw-5.png)
-
+![draw-5](../.assets/draw-5.png)
 Notice that the number of cards remaining is now 47 (52 - 5). You can (re-)shuffle the existing deck or create a new one to start over.
 
 That's it!
@@ -37,11 +36,11 @@ For the following, we assume that you have cloned this repository and have acces
 
 1. If not open already, open the Copilot Chat window by clicking on the button in the VS Code title bar.
 
-    ![copilot-1](./assets/copilot-1.png)
+    ![copilot-1](../.assets/copilot-1.png)
 
 2. From the VS Code Explorer View, drag the `deck-of-cards` folder into the Copilot input area.
 
-    ![copilot-2](./assets/copilot-2.png)
+    ![copilot-2](../.assets/copilot-2.png)
 
 3. We will be asking Copilot to explain the code in this folder. Ensure that the dropdown below the input field is set to **Ask**. We don't want Copilot to make changes to our code.
 
