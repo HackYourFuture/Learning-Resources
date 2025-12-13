@@ -1,3 +1,4 @@
+import fetchJson from '../lib/fetchJson.js';
 import $state from '../lib/observableState.js';
 import router from '../lib/router.js';
 import { removeToken } from '../lib/tokenUtils.js';
@@ -16,12 +17,9 @@ export default class HomePage {
     $state.set({});
 
     try {
-      const response = await fetch('/user/logout', {
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Logout failed. Reason: HTTP ${response.status}`);
+      const result = await fetchJson('/user/logout', { method: 'POST' });
+      if (!result.ok) {
+        throw new Error(result.message || `Logout failed. HTTP ${result.status}`);
       }
     } catch (error) {
       $state.update({ error: error.message });
@@ -37,29 +35,22 @@ export default class HomePage {
       if (!token) {
         throw new Error('No token found');
       }
-      const response = await fetch('/user/me', {
+      const result = await fetchJson('/user/me', {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        data = { message: 'HTTP ' + response.status };
-      }
-
-      if (!response.ok) {
-        $state.update({ error: data.message });
+      if (!result.ok) {
+        $state.update({ error: result.message });
         removeToken();
         $state.set({});
         router.navigateTo('login');
         return;
       }
 
-      $state.update({ profile: data.message });
+      // Depending on server shape, prefer data.user; keep message for compatibility
+      const profile = result.data?.user ?? result.data?.message ?? null;
+      $state.update({ profile });
     } catch (error) {
       $state.update({ error: error.message });
     }

@@ -1,3 +1,4 @@
+import fetchJson from '../lib/fetchJson.js';
 import $state from '../lib/observableState.js';
 import router from '../lib/router.js';
 import { putToken } from '../lib/tokenUtils.js';
@@ -13,27 +14,18 @@ export default class LoginPage {
 
   #onSubmit = async (username, password) => {
     try {
-      const response = await fetch('/user/login', {
+      const result = await fetchJson('/user/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        body: { username, password },
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        data = { message: 'HTTP ' + response.status };
+      if (!result.ok) {
+        throw new Error(result.message || 'Login failed');
       }
 
-      if (!response.ok) {
-        throw new Error(data.message);
-      }
-
-      putToken(data.token);
-      $state.update({ token: data.token, error: null });
+      const token = result.data?.token;
+      putToken(token);
+      $state.update({ token, error: null });
 
       router.navigateTo('home');
     } catch (error) {
