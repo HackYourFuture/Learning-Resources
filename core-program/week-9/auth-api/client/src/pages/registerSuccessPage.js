@@ -1,4 +1,4 @@
-import router from '../util/router.js';
+import router from '../lib/router.js';
 import RegisterSuccessView from '../views/registerSuccessView.js';
 
 export default class RegisterSuccessPage {

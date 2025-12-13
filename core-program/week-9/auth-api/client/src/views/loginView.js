@@ -1,5 +1,5 @@
-import getElementsWithIds from '../util/getElementsWithIds.js';
-import ModalDialView from './modalDialogView.js';
+import getElementsWithIds from '../lib/getElementsWithIds.js';
+import ModalDialogView from './modalDialogView.js';
 
 export default class LoginView {
   #props;
@@ -29,7 +29,7 @@ export default class LoginView {
                 <p>Not yet registered? 
                 <a href="#"
                   style="text-decoration: none;" id="registerLink">
-                  Create an account
+                  Register
                 </a>
               </p>
             </div>
@@ -39,7 +39,7 @@ export default class LoginView {
       </div>    
     `;
 
-    this.#modalView = new ModalDialView({ title: 'Login Failed' });
+    this.#modalView = new ModalDialogView({ title: 'Login Failed' });
     this.#root.append(this.#modalView.root);
 
     this.#dom = getElementsWithIds(this.#root);

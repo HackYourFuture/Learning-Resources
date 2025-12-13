@@ -1,7 +1,6 @@
 class Router {
   #routes;
   #pageRoot;
-  #appState;
   #currentPage = {};
 
   constructor(routes, pageRoot) {
@@ -20,14 +19,6 @@ class Router {
     return [path, ...rest];
   }
 
-  #getDefaultRoute() {
-    const defaultRoute = this.#routes.find((route) => route.default);
-    if (!defaultRoute) {
-      throw new Error('Missing default route in routes table');
-    }
-    return defaultRoute;
-  }
-
   #findRouteByPathname(pathname) {
     return this.#routes.find((route) => route.path === pathname);
   }
@@ -36,21 +27,20 @@ class Router {
     const [pathname, ...params] = this.#getRouteParts();
 
     // Find the page corresponding to the current hash value
-    const route = this.#findRouteByPathname(pathname);
+    let route = this.#findRouteByPathname(pathname);
 
-    // If not found, redirect to default page
+    // If not found, redirect to login page
     if (!route) {
-      this.navigateTo(this.#getDefaultRoute().path);
-      return;
+      route = 'login';
     }
 
-    // Call optional willUnmount lifecycle method.
+    // Call optional willUnload lifecycle method.
     if (this.#currentPage.pageWillUnload) {
       this.#currentPage.pageWillUnload();
     }
 
     // Create the page corresponding to the route.
-    let newPage = new route.page(this.#appState);
+    let newPage = new route.page(...params);
     if (typeof newPage !== 'object') {
       throw new Error(`Page ${pathname} did not return an object`);
     }
@@ -63,7 +53,7 @@ class Router {
     // Reset scroll position to top of page
     window.scrollTo(0, 0);
 
-    // Call optional didMount lifecycle method.
+    // Call optional didLoad lifecycle method.
     if (newPage.pageDidLoad) {
       newPage.pageDidLoad();
     }
@@ -76,11 +66,8 @@ class Router {
     this.#pageRoot = pageRoot;
   }
 
-  start(state) {
-    this.#appState = state;
-
+  start() {
     this.#onHashChange();
-    window.addEventListener('hashchange', () => this.#onHashChange());
   }
 
   navigateTo(path, ...params) {

@@ -1,21 +1,14 @@
-import router from '../util/router.js';
-import { putToken } from '../util/tokenUtils.js';
+import $state from '../lib/observableState.js';
+import router from '../lib/router.js';
+import { putToken } from '../lib/tokenUtils.js';
 import LoginView from '../views/loginView.js';
 
 export default class LoginPage {
-  #state;
-
-  constructor(state) {
-    this.#state = state;
+  constructor() {
     this.view = new LoginView({
       onSubmit: this.#onSubmit,
       onRegister: this.#onRegister,
     });
-  }
-
-  #updateView(updates) {
-    Object.assign(this.#state, updates);
-    this.view.update(this.#state);
   }
 
   #onSubmit = async (username, password) => {
@@ -40,18 +33,25 @@ export default class LoginPage {
       }
 
       putToken(data.token);
-      Object.assign(this.#state, { token: data.token, error: null });
+      $state.update({ token: data.token, error: null });
 
       router.navigateTo('home');
     } catch (error) {
-      Object.assign(this.#state, { error: error.message });
-      this.#updateView(this.#state);
+      $state.update({ error: error.message });
     }
   };
 
   #onRegister = () => {
     router.navigateTo('register');
   };
+
+  pageDidLoad() {
+    $state.subscribe(this.view);
+  }
+
+  pageWillUnload() {
+    $state.unsubscribe(this.view);
+  }
 
   get root() {
     return this.view.root;

@@ -1,4 +1,4 @@
-import getElementsWithIds from '../util/getElementsWithIds.js';
+import getElementsWithIds from '../lib/getElementsWithIds.js';
 
 export default class RegisterSuccessView {
   #props;

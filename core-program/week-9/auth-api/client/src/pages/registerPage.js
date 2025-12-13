@@ -1,20 +1,13 @@
-import router from '../util/router.js';
+import $state from '../lib/observableState.js';
+import router from '../lib/router.js';
 import RegisterView from '../views/registerView.js';
 
 export default class RegisterPage {
-  #state;
-
-  constructor(state) {
-    this.#state = state;
+  constructor() {
     this.view = new RegisterView({
       onSubmit: this.#onSubmit,
       onLogin: this.#onLogin,
     });
-  }
-
-  #updateView(updates) {
-    Object.assign(this.#state, updates);
-    this.view.update(this.#state);
   }
 
   #onSubmit = async (username, password) => {
@@ -40,14 +33,21 @@ export default class RegisterPage {
 
       router.navigateTo('register-success');
     } catch (error) {
-      Object.assign(this.#state, { error: error.message });
-      this.#updateView(this.#state);
+      $state.update({ error: error.message });
     }
   };
 
   #onLogin = () => {
     router.navigateTo('login');
   };
+
+  pageDidLoad() {
+    $state.subscribe(this.view);
+  }
+
+  pageWillUnload() {
+    $state.unsubscribe(this.view);
+  }
 
   get root() {
     return this.view.root;

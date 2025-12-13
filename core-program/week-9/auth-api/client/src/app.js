@@ -1,8 +1,9 @@
+import $state from './lib/observableState.js';
+import router from './lib/router.js';
+import { getToken } from './lib/tokenUtils.js';
 import routes from './routes.js';
-import initializeState from './util/initializeState.js';
-import router from './util/router.js';
 
-function loadApp() {
+function start() {
   const appRoot = document.getElementById('app-root');
 
   // Create a DOM element that will serve as the mount point
@@ -11,11 +12,14 @@ function loadApp() {
   pageRoot.id = 'page-root';
   appRoot.appendChild(pageRoot);
 
-  const state = initializeState();
+  const token = getToken();
+  if (token) {
+    $state.set({ token });
+  }
 
   router.initialize(routes, pageRoot);
-  router.navigateTo(state.token ? 'home' : 'login');
-  router.start(state);
+  router.navigateTo(token ? 'home' : 'login');
+  router.start();
 }
 
-window.addEventListener('DOMContentLoaded', loadApp);
+window.addEventListener('DOMContentLoaded', start);

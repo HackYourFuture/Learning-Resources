@@ -5,7 +5,7 @@ import RegisterSuccessPage from './pages/registerSuccessPage.js';
 
 const routes = [
   { path: 'home', page: HomePage },
-  { path: 'login', page: LoginPage, default: true },
+  { path: 'login', page: LoginPage },
   { path: 'register', page: RegisterPage },
   { path: 'register-success', page: RegisterSuccessPage },
 ];

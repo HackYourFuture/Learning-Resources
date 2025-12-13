@@ -1,7 +1,7 @@
-import getElementsWithIds from '../util/getElementsWithIds.js';
-import ModalDialView from './modalDialogView.js';
+import getElementsWithIds from '../lib/getElementsWithIds.js';
+import ModalDialogView from './modalDialogView.js';
 
-export default class RegisterSuccessView {
+export default class RegisterView {
   #props;
   #root;
   #modalView;
@@ -39,7 +39,7 @@ export default class RegisterSuccessView {
     </div>     
     `;
 
-    this.#modalView = new ModalDialView({ title: 'Registration Failed' });
+    this.#modalView = new ModalDialogView({ title: 'Registration Failed' });
     this.#root.append(this.#modalView.root);
 
     this.#dom = getElementsWithIds(this.#root);
