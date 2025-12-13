@@ -1,26 +1,32 @@
-import fetchAndLog from '../util/fetchAndLog.js';
 import initializeState from '../util/initializeState.js';
-import loadPage from '../util/loadPage.js';
-import logger from '../util/logger.js';
+import router from '../util/router.js';
 import { removeToken } from '../util/tokenUtils.js';
-import createHomeView from '../views/homeView.js';
-import createLoginPage from './loginPage.js';
+import HomeView from '../views/homeView.js';
 
-function createHomePage(state) {
-  const updateView = (updates) => {
-    state = { ...state, ...updates };
-    logger.debug('state', state);
-    view.update(state);
-  };
+export default class HomePage {
+  #state;
 
-  const onLogout = async () => {
+  constructor(state) {
+    this.#state = state;
+    this.view = new HomeView({
+      onLogout: this.#onLogout,
+    });
+
+    this.#getProfile();
+  }
+
+  #updateView(updates) {
+    Object.assign(this.#state, updates);
+    this.view.update(this.#state);
+  }
+
+  #onLogout = async () => {
     removeToken();
 
     // reset state
-    state = initializeState();
-
+    Object.assign(this.#state, initializeState());
     try {
-      const response = await fetchAndLog('/user/logout', {
+      const response = await fetch('/user/logout', {
         method: 'POST',
       });
 
@@ -28,44 +34,45 @@ function createHomePage(state) {
         throw new Error(`Logout failed. Reason: HTTP ${response.status}`);
       }
 
-      loadPage(createLoginPage, state);
+      router.navigateTo('login');
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      Object.assign(this.#state, { error: error.message });
+      this.#updateView(this.#state);
     }
   };
 
-  const getProfile = async () => {
+  async #getProfile() {
     try {
-      const response = await fetchAndLog('/user/profile', {
+      const response = await fetch('/user/profile', {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${state.token}`,
+          Authorization: `Bearer ${this.#state.token}`,
         },
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = { message: 'HTTP ' + response.status };
+      }
 
       if (!response.ok) {
-        state = { ...state, error: data.message };
-        logger.debug('state', state);
+        Object.assign(this.#state, { error: data.message });
         removeToken();
-        state = initializeState();
-        loadPage(createLoginPage, state);
+        Object.assign(this.#state, initializeState());
+        router.navigateTo('login');
         return;
       }
 
-      updateView({ profile: data.message });
+      this.#updateView({ profile: data.message });
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      Object.assign(this.#state, { error: error.message });
+      this.#updateView(this.#state);
     }
-  };
+  }
 
-  const view = createHomeView({ onLogout });
-  getProfile();
-
-  return view;
+  get root() {
+    return this.view.root;
+  }
 }
-
-export default createHomePage;

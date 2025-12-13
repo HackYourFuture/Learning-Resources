@@ -1,16 +1,18 @@
-import loadPage from '../util/loadPage.js';
-import logger from '../util/logger.js';
-import createRegisterSuccessView from '../views/registerSuccessView.js';
-import createLoginPage from './loginPage.js';
+import router from '../util/router.js';
+import RegisterSuccessView from '../views/registerSuccessView.js';
 
-function createRegisterSuccessPage(state) {
-  const onLogin = () => {
-    loadPage(createLoginPage, state);
+export default class RegisterSuccessPage {
+  constructor() {
+    this.view = new RegisterSuccessView({
+      onLogin: this.#onLogin,
+    });
+  }
+
+  #onLogin = () => {
+    router.navigateTo('login');
   };
 
-  const view = createRegisterSuccessView({ onLogin });
-
-  return view;
+  get root() {
+    return this.view.root;
+  }
 }
-
-export default createRegisterSuccessPage;

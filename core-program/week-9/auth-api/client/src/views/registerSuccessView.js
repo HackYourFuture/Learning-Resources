@@ -1,48 +1,55 @@
-import getViewIds from '../util/getViewIds.js';
+import getElementsWithIds from '../util/getElementsWithIds.js';
 
-function createRegisterSuccessView(props) {
-  const root = document.createElement('div');
-  root.innerHTML = String.raw`
-    <div class="row">
-      <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <nav>
-          <div class="nav-wrapper">
-            <div class="col s12">
-              <a href="#" class="brand-logo">HYF Node.js</a>
-              <a href="#" data-target="mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-              <ul class="right hide-on-med-and-down">
-                <li><a href="#" id="loginBtn">Login</a></li>
-              </ul>
+export default class RegisterSuccessView {
+  #props;
+  #root;
+  #dom;
+
+  constructor(props) {
+    this.#props = props;
+    this.#root = document.createElement('div');
+    this.#root.innerHTML = String.raw`
+      <div class="row">
+        <div class="col s12 m8 offset-m2 l6 offset-l3">
+          <nav>
+            <div class="nav-wrapper">
+              <div class="col s12">
+                <a href="#" class="brand-logo">HYF Node.js</a>
+                <a href="#" data-target="mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                  <li><a href="#" id="loginBtn">Login</a></li>
+                </ul>
+              </div>
             </div>
-          </div>
-        </nav>
-        <ul class="sidenav" id="mobile">
-          <li><a href="#" id="mobileLoginBtn">Login</a></li>
-        </ul>
+          </nav>
+          <ul class="sidenav" id="mobile">
+            <li><a href="#" id="mobileLoginBtn">Login</a></li>
+          </ul>
+        </div>
+
+        <div class="col s12 m8 offset-m2 l6 offset-l3">
+          <h5>Registration was successful!</h5>
+          <p>You can now login with your username and password.</p>
+        </div>
       </div>
+    `;
 
-      <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <h5>Registration was successful!</h5>
-        <p>You can now login with your username and password.</p>
-      </div>
-    </div>
-  `;
+    this.#dom = getElementsWithIds(this.#root);
 
-  const dom = getViewIds(root);
+    const sideNavElements = this.#root.querySelectorAll('.sidenav');
+    this.sideNavInstances = M.Sidenav.init(sideNavElements);
 
-  const sideNavElements = root.querySelectorAll('.sidenav');
-  const sideNavInstances = M.Sidenav.init(sideNavElements);
+    this.#dom.loginBtn.addEventListener('click', this.#loginHandler);
+    this.#dom.mobileLoginBtn.addEventListener('click', this.#loginHandler);
+  }
 
-  const loginHandler = (event) => {
-    event.preventDefault();
-    sideNavInstances[0].close();
-    props.onLogin();
+  #loginHandler = (e) => {
+    e.preventDefault();
+    this.sideNavInstances[0].close();
+    this.#props.onLogin();
   };
 
-  dom.loginBtn.addEventListener('click', loginHandler);
-  dom.mobileLoginBtn.addEventListener('click', loginHandler);
-
-  return { root };
+  get root() {
+    return this.#root;
+  }
 }
-
-export default createRegisterSuccessView;

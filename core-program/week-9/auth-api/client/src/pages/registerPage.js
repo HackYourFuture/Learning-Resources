@@ -1,20 +1,25 @@
-import fetchAndLog from '../util/fetchAndLog.js';
-import loadPage from '../util/loadPage.js';
-import logger from '../util/logger.js';
-import createRegisterView from '../views/registerView.js';
-import createLoginPage from './loginPage.js';
-import createRegisterSuccessPage from './registerSuccessPage.js';
+import router from '../util/router.js';
+import RegisterView from '../views/registerView.js';
 
-function createRegisterPage(state) {
-  const updateView = (updates) => {
-    state = { ...state, ...updates };
-    logger.debug('state', state);
-    view.update(state);
-  };
+export default class RegisterPage {
+  #state;
 
-  const onSubmit = async (username, password) => {
+  constructor(state) {
+    this.#state = state;
+    this.view = new RegisterView({
+      onSubmit: this.#onSubmit,
+      onLogin: this.#onLogin,
+    });
+  }
+
+  #updateView(updates) {
+    Object.assign(this.#state, updates);
+    this.view.update(this.#state);
+  }
+
+  #onSubmit = async (username, password) => {
     try {
-      const response = await fetchAndLog('/user/register', {
+      const response = await fetch('/user/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,27 +27,29 @@ function createRegisterPage(state) {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = { message: 'HTTP ' + response.status };
+      }
+
       if (!response.ok) {
         throw new Error(data.message);
       }
 
-      logger.debug('response', data);
-
-      loadPage(createRegisterSuccessPage, state);
+      router.navigateTo('register-success');
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      Object.assign(this.#state, { error: error.message });
+      this.#updateView(this.#state);
     }
   };
 
-  const onLogin = () => {
-    loadPage(createLoginPage, state);
+  #onLogin = () => {
+    router.navigateTo('login');
   };
 
-  const view = createRegisterView({ onSubmit, onLogin });
-
-  return view;
+  get root() {
+    return this.view.root;
+  }
 }
-
-export default createRegisterPage;

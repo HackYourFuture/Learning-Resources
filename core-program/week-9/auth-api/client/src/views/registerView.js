@@ -1,9 +1,16 @@
-import getViewIds from '../util/getViewIds.js';
-import createModalDialView from './modalDialogView.js';
+import getElementsWithIds from '../util/getElementsWithIds.js';
+import ModalDialView from './modalDialogView.js';
 
-function createRegisterView(props) {
-  const root = document.createElement('div');
-  root.innerHTML = String.raw`
+export default class RegisterSuccessView {
+  #props;
+  #root;
+  #modalView;
+  #dom;
+
+  constructor(props) {
+    this.#props = props;
+    this.#root = document.createElement('div');
+    this.#root.innerHTML = String.raw`
     <div class="container">
       <div class="row">
         <div class="col s6 offset-s3 z-depth-1 user-panel">
@@ -29,29 +36,33 @@ function createRegisterView(props) {
           </div>
         </div>
       </div>
-    </div>         
-  `;
+    </div>     
+    `;
 
-  const modalView = createModalDialView({ title: 'Registration Failed' });
-  root.append(modalView.root);
+    this.#modalView = new ModalDialView({ title: 'Registration Failed' });
+    this.#root.append(this.#modalView.root);
 
-  const dom = getViewIds(root);
+    this.#dom = getElementsWithIds(this.#root);
+    this.#dom.registerForm.addEventListener('submit', this.#onSumbit);
+    this.#dom.loginLink.addEventListener('click', this.#onLogin);
+  }
 
-  dom.registerForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    props.onSubmit(dom.username.value, dom.password.value);
-  });
-
-  dom.loginLink.addEventListener('click', (event) => {
-    event.preventDefault();
-    props.onLogin();
-  });
-
-  const update = (state) => {
-    modalView.update(state);
+  #onSumbit = (e) => {
+    e.preventDefault();
+    const { username, password } = this.#dom;
+    this.#props.onSubmit(username.value, password.value);
   };
 
-  return { root, update };
-}
+  #onLogin = (e) => {
+    e.preventDefault();
+    this.#props.onLogin();
+  };
 
-export default createRegisterView;
+  update(state) {
+    this.#modalView.update(state);
+  }
+
+  get root() {
+    return this.#root;
+  }
+}

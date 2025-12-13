@@ -3,7 +3,7 @@
  * @param {HTMLElement} root The root element to start from.
  * @returns An object with `id` as key and an element reference as value.
  */
-function getViewIds(root) {
+function getElementsWithIds(root) {
   const elementsWithIds = Array.from(root.querySelectorAll('[id]'));
   const dom = {};
   for (const elem of elementsWithIds) {
@@ -12,4 +12,4 @@ function getViewIds(root) {
   return dom;
 }
 
-export default getViewIds;
+export default getElementsWithIds;
