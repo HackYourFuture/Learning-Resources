@@ -25,20 +25,24 @@ async function dance(img) {
   img.src = savedSrc;
 }
 
-async function catWalk(catIndex = 0) {
-  const top = catIndex * 220;
-  const stepInterval = 20 - catIndex * 3;
+function createCatImage(top, imgWidth) {
   const img = document.createElement('img');
   img.src = 'http://www.anniemation.com/clip_art/images/cat-walk.gif';
-  const imgWidth = 300;
   img.style.top = `${top}px`;
   img.style.left = `${-imgWidth}px`;
   document.body.append(img);
+  return img;
+}
 
+async function catWalk(catIndex = 0) {
+  const top = catIndex * 220;
+  const stepInterval = 20 - catIndex * 3;
+  const imgWidth = 300;
   const startPos = -imgWidth;
   const centerPos = (window.innerWidth - imgWidth) / 2;
   const stopPos = window.innerWidth;
 
+  const img = createCatImage(top, imgWidth);
   await walk(img, startPos, centerPos, stepInterval, catIndex);
   await dance(img, catIndex);
   await walk(img, centerPos, stopPos, stepInterval, catIndex);
