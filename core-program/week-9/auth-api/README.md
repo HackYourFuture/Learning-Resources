@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Install dependencies:
+Go to the `auth-api/server` folder and run:
 
 ```bash
 npm install
