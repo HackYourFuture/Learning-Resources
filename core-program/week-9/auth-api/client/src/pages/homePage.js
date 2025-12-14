@@ -1,22 +1,17 @@
 import fetchJson from '../lib/fetchJson.js';
 import { removeToken } from '../lib/tokenUtils.js';
 import HomeView from '../views/homeView.js';
+import Page from './page.js';
 
-export default class HomePage {
-  #router;
-  #state;
-
+export default class HomePage extends Page {
   constructor(props) {
-    this.#router = props.router;
-    this.#state = props.state;
-
+    super(props);
     this.view = new HomeView({ onLogout: this.#onLogout });
-
     this.#getProfile();
   }
 
   #onLogout = async () => {
-    this.#state.clear();
+    this.state.clear();
 
     try {
       const result = await fetchJson('/user/logout', { method: 'POST' });
@@ -26,16 +21,16 @@ export default class HomePage {
         );
       }
     } catch (error) {
-      this.#state.update({ error: error.message });
+      this.state.update({ error: error.message });
     } finally {
       removeToken();
-      this.#router.navigateTo('login');
+      this.router.navigateTo('login');
     }
   };
 
   async #getProfile() {
     try {
-      const { token } = this.#state.get();
+      const { token } = this.state.get();
       if (!token) {
         throw new Error('No token found');
       }
@@ -45,30 +40,18 @@ export default class HomePage {
       });
 
       if (!result.ok) {
-        this.#state.update({ error: result.message });
+        this.state.update({ error: result.message });
         removeToken();
-        this.#state.clear();
-        this.#router.navigateTo('login');
+        this.state.clear();
+        this.router.navigateTo('login');
         return;
       }
 
       // Depending on server shape, prefer data.user; keep message for compatibility
       const profile = result.data?.user ?? result.data?.message ?? null;
-      this.#state.update({ profile });
+      this.state.update({ profile });
     } catch (error) {
-      this.#state.update({ error: error.message });
+      this.state.update({ error: error.message });
     }
-  }
-
-  pageDidLoad() {
-    this.#state.subscribe(this.view);
-  }
-
-  pageWillUnload() {
-    this.#state.unsubscribe(this.view);
-  }
-
-  get root() {
-    return this.view.root;
   }
 }

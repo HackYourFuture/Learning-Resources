@@ -1,8 +1,7 @@
-import $state from './lib/observableState.js';
+import ObservableState from './lib/observableState.js';
 import Router from './lib/router.js';
 import { getToken } from './lib/tokenUtils.js';
 import routes from './routes.js';
-import ObservableState from './lib/observableState.js';
 
 function start() {
   const appRoot = document.getElementById('app-root');
@@ -13,12 +12,13 @@ function start() {
   pageRoot.id = 'page-root';
   appRoot.appendChild(pageRoot);
 
+  const state = new ObservableState();
+
   const token = getToken();
   if (token) {
-    $state.set({ token });
+    state.set({ token });
   }
 
-  const state = new ObservableState();
   const router = new Router(state);
 
   router.initialize(routes, pageRoot);

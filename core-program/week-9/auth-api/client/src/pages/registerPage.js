@@ -1,14 +1,10 @@
 import fetchJson from '../lib/fetchJson.js';
 import RegisterView from '../views/registerView.js';
+import Page from './page.js';
 
-export default class RegisterPage {
-  #state;
-  #router;
-
+export default class RegisterPage extends Page {
   constructor(props) {
-    this.#state = props.state;
-    this.#router = props.router;
-
+    super(props);
     this.view = new RegisterView({
       onSubmit: this.#onSubmit,
       onLogin: this.#onLogin,
@@ -26,25 +22,13 @@ export default class RegisterPage {
         throw new Error(result.message || 'Register failed');
       }
 
-      this.#router.navigateTo('register-success');
+      this.router.navigateTo('register-success');
     } catch (error) {
-      this.#state.update({ error: error.message });
+      this.state.update({ error: error.message });
     }
   };
 
   #onLogin = () => {
-    this.#router.navigateTo('login');
+    this.router.navigateTo('login');
   };
-
-  pageDidLoad() {
-    this.#state.subscribe(this.view);
-  }
-
-  pageWillUnload() {
-    this.#state.unsubscribe(this.view);
-  }
-
-  get root() {
-    return this.view.root;
-  }
 }

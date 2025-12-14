@@ -33,8 +33,8 @@ export default class Router {
     }
 
     // Call optional willUnload lifecycle method.
-    if (this.#currentPage.pageWillUnload) {
-      this.#currentPage.pageWillUnload();
+    if (this.#currentPage.pageWillUnmount) {
+      this.#currentPage.pageWillUnmount();
     }
 
     // Create the page corresponding to the route.
@@ -52,8 +52,8 @@ export default class Router {
     window.scrollTo(0, 0);
 
     // Call optional didLoad lifecycle method.
-    if (newPage.pageDidLoad) {
-      newPage.pageDidLoad();
+    if (newPage.pageDidMount) {
+      newPage.pageDidMount();
     }
 
     this.#currentPage = newPage;

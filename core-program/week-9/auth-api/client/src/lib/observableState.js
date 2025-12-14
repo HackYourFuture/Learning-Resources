@@ -5,15 +5,14 @@ export default class ObservableState {
   #notify() {
     console.log(this.#state);
 
-    this.#subscribers.forEach((subscriber) =>
-      subscriber.update({ ...this.#state })
-    );
+    this.#subscribers.forEach((subscriber) => {
+      if (typeof subscriber.update === 'function') {
+        subscriber.update({ ...this.#state });
+      }
+    });
   }
 
   subscribe(subscriber) {
-    if (!('update' in subscriber)) {
-      throw new Error('Subscriber must implement update(state)');
-    }
     this.#subscribers.add(subscriber);
   }
 
