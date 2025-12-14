@@ -1,9 +1,9 @@
 import fetchJson from '../lib/fetchJson.js';
 import { putToken } from '../lib/tokenUtils.js';
 import LoginView from '../views/loginView.js';
-import Page from './page.js';
+import BasePage from './basePage.js';
 
-export default class LoginPage extends Page {
+export default class LoginPage extends BasePage {
   constructor(props) {
     super(props);
     this.view = new LoginView({

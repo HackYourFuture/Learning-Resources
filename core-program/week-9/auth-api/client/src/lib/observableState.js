@@ -6,9 +6,7 @@ export default class ObservableState {
     console.log(this.#state);
 
     this.#subscribers.forEach((subscriber) => {
-      if (typeof subscriber.update === 'function') {
-        subscriber.update({ ...this.#state });
-      }
+      subscriber.update({ ...this.#state });
     });
   }
 

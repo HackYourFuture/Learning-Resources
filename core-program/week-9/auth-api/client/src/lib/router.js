@@ -32,7 +32,7 @@ export default class Router {
       route = 'login';
     }
 
-    // Call optional willUnload lifecycle method.
+    // Call optional willUnmount lifecycle method.
     if (this.#currentPage.pageWillUnmount) {
       this.#currentPage.pageWillUnmount();
     }
@@ -51,7 +51,7 @@ export default class Router {
     // Reset scroll position to top of page
     window.scrollTo(0, 0);
 
-    // Call optional didLoad lifecycle method.
+    // Call optional didMount lifecycle method.
     if (newPage.pageDidMount) {
       newPage.pageDidMount();
     }
