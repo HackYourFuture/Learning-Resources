@@ -1,32 +1,37 @@
-function createModalDialView(props) {
-  const root = document.createElement('div');
-  root.innerHTML = String.raw`
-    <!-- Modal Structure: https://materializecss.com/modals.html -->
+export default class ModalDialogView {
+  #root;
+  #dom = {};
+  #modalInstances;
+
+  constructor(props) {
+    this.#root = document.createElement('div');
+    this.#root.innerHTML = String.raw`
+      <!-- Modal Structure: https://materializecss.com/modals.html -->
     <div class="modal">
       <div class="modal-content">
         <h4>${props.title}</h4>
         <p id="modal-text"></p>
       </div>
       <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        <button class="modal-close waves-effect waves-green btn-flat">Close</button>
       </div>
     </div>        
   `;
 
-  const dom = {};
-  dom.modalText = root.querySelector('#modal-text');
+    this.#dom.modalText = this.#root.querySelector('#modal-text');
 
-  const modalElements = root.querySelectorAll('.modal');
-  const modalInstances = M.Modal.init(modalElements);
+    const modalElements = this.#root.querySelectorAll('.modal');
+    this.#modalInstances = M.Modal.init(modalElements);
+  }
 
-  const update = (state) => {
+  update(state) {
     if (state.error) {
-      dom.modalText.textContent = state.error;
-      modalInstances[0].open();
+      this.#dom.modalText.textContent = state.error;
+      this.#modalInstances[0].open();
     }
-  };
+  }
 
-  return { root, update };
+  get root() {
+    return this.#root;
+  }
 }
-
-export default createModalDialView;

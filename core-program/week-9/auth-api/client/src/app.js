@@ -1,20 +1,29 @@
-import createHomePage from './pages/homePage.js';
-import createLoginPage from './pages/loginPage.js';
-import initializeState from './util/initializeState.js';
-import loadPage from './util/loadPage.js';
-import logger from './util/logger.js';
+import ObservableState from './lib/observableState.js';
+import Router from './lib/router.js';
+import { getToken } from './lib/tokenUtils.js';
+import routes from './routes.js';
 
-function loadApp() {
-  // Set the desired log level
-  logger.setLevel('debug');
+function start() {
+  const appRoot = document.getElementById('app-root');
 
-  const state = initializeState();
+  // Create a DOM element that will serve as the mount point
+  // used by the router for loading paging.
+  const pageRoot = document.createElement('div');
+  pageRoot.id = 'page-root';
+  appRoot.appendChild(pageRoot);
 
-  if (state.token) {
-    loadPage(createHomePage, state);
-  } else {
-    loadPage(createLoginPage, state);
+  const state = new ObservableState();
+
+  const token = getToken();
+  if (token) {
+    state.set({ token });
   }
+
+  const router = new Router(state);
+
+  router.initialize(routes, pageRoot);
+  router.navigateTo(token ? 'home' : 'login');
+  router.start();
 }
 
-window.addEventListener('load', loadApp);
+window.addEventListener('DOMContentLoaded', start);

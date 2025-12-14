@@ -51,7 +51,7 @@ The server listens on `http://localhost:3000`.
 
 ### Get profile
 
-- **GET** `/user/profile`
+- **GET** `/user/me`
 - **Headers**: `Authorization: Bearer <jwt>`
 - **Responses**:
   - `200 OK`: `{ "message": "You are currently logged in as <username>" }`
