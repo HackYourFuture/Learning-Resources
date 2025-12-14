@@ -1,4 +1,4 @@
-class ObservableState {
+export default class ObservableState {
   #state = {};
   #subscribers = new Set();
 
@@ -34,6 +34,9 @@ class ObservableState {
     this.#state = { ...nextState };
     this.#notify();
   }
-}
 
-export default new ObservableState();
+  clear() {
+    this.#state = {};
+    this.#notify();
+  }
+}

@@ -1,14 +1,12 @@
-class Router {
+export default class Router {
   #routes;
   #pageRoot;
   #currentPage = {};
+  #state;
 
-  constructor(routes, pageRoot) {
-    this.#routes = routes;
-    this.#pageRoot = pageRoot;
-    this.#currentPage = {};
-
-    window.addEventListener('hashchange', () => this.#onHashChange());
+  constructor(state) {
+    this.#state = state;
+    window.addEventListener('hashchange', this.#onHashChange);
   }
 
   #getRouteParts() {
@@ -23,7 +21,7 @@ class Router {
     return this.#routes.find((route) => route.path === pathname);
   }
 
-  async #onHashChange() {
+  #onHashChange = async () => {
     const [pathname, ...params] = this.#getRouteParts();
 
     // Find the page corresponding to the current hash value
@@ -40,7 +38,7 @@ class Router {
     }
 
     // Create the page corresponding to the route.
-    let newPage = new route.page(...params);
+    let newPage = new route.page({ router: this, params, state: this.#state });
     if (typeof newPage !== 'object') {
       throw new Error(`Page ${pathname} did not return an object`);
     }
@@ -59,7 +57,7 @@ class Router {
     }
 
     this.#currentPage = newPage;
-  }
+  };
 
   initialize(routes, pageRoot) {
     this.#routes = routes;
@@ -75,5 +73,3 @@ class Router {
     window.location.assign(encodedHash);
   }
 }
-
-export default new Router();

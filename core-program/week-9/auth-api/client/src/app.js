@@ -1,7 +1,8 @@
 import $state from './lib/observableState.js';
-import router from './lib/router.js';
+import Router from './lib/router.js';
 import { getToken } from './lib/tokenUtils.js';
 import routes from './routes.js';
+import ObservableState from './lib/observableState.js';
 
 function start() {
   const appRoot = document.getElementById('app-root');
@@ -16,6 +17,9 @@ function start() {
   if (token) {
     $state.set({ token });
   }
+
+  const state = new ObservableState();
+  const router = new Router(state);
 
   router.initialize(routes, pageRoot);
   router.navigateTo(token ? 'home' : 'login');
