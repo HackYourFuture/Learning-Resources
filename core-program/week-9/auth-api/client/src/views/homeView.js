@@ -1,17 +1,17 @@
 import getElementsWithIds from '../lib/getElementsWithIds.js';
+import BaseView from './baseView.js';
 import ModalDialogView from './modalDialogView.js';
 
-export default class HomeView {
+export default class HomeView extends BaseView {
   #props;
-  #root;
   #dom;
   #modalView;
   #sideNavInstances;
 
   constructor(props) {
+    super('div');
     this.#props = props;
-    this.#root = document.createElement('div');
-    this.#root.innerHTML = String.raw`
+    this.root.innerHTML = String.raw`
       <div class="row">
         <div class="col s12 m8 offset-m2 l6 offset-l3">
           <nav>
@@ -36,11 +36,11 @@ export default class HomeView {
     `;
 
     this.#modalView = new ModalDialogView({ title: 'Error' });
-    this.#root.append(this.#modalView.root);
+    this.root.append(this.#modalView.root);
 
-    this.#dom = getElementsWithIds(this.#root);
+    this.#dom = getElementsWithIds(this.root);
 
-    const sideNavElements = this.#root.querySelectorAll('.sidenav');
+    const sideNavElements = this.root.querySelectorAll('.sidenav');
     this.#sideNavInstances = M.Sidenav.init(sideNavElements);
 
     this.#dom.logoutBtn.addEventListener('click', this.#logoutHandler);
@@ -56,9 +56,5 @@ export default class HomeView {
   update(state) {
     this.#dom.profile.textContent = state.profile;
     this.#modalView.update(state);
-  }
-
-  get root() {
-    return this.#root;
   }
 }

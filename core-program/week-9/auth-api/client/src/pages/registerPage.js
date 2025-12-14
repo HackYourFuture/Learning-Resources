@@ -1,8 +1,8 @@
 import fetchJson from '../lib/fetchJson.js';
 import RegisterView from '../views/registerView.js';
-import Page from './page.js';
+import BasePage from './basePage.js';
 
-export default class RegisterPage extends Page {
+export default class RegisterPage extends BasePage {
   constructor(props) {
     super(props);
     this.view = new RegisterView({

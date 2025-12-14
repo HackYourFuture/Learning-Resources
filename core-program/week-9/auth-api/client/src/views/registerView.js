@@ -1,16 +1,16 @@
 import getElementsWithIds from '../lib/getElementsWithIds.js';
+import BaseView from './baseView.js';
 import ModalDialogView from './modalDialogView.js';
 
-export default class RegisterView {
+export default class RegisterView extends BaseView {
   #props;
-  #root;
   #modalView;
   #dom;
 
   constructor(props) {
+    super('div');
     this.#props = props;
-    this.#root = document.createElement('div');
-    this.#root.innerHTML = String.raw`
+    this.root.innerHTML = String.raw`
     <div class="container">
       <div class="row">
         <div class="col s6 offset-s3 z-depth-1 user-panel">
@@ -40,9 +40,9 @@ export default class RegisterView {
     `;
 
     this.#modalView = new ModalDialogView({ title: 'Registration Failed' });
-    this.#root.append(this.#modalView.root);
+    this.root.append(this.#modalView.root);
 
-    this.#dom = getElementsWithIds(this.#root);
+    this.#dom = getElementsWithIds(this.root);
     this.#dom.registerForm.addEventListener('submit', this.#onSumbit);
     this.#dom.loginLink.addEventListener('click', this.#onLogin);
   }
@@ -60,9 +60,5 @@ export default class RegisterView {
 
   update(state) {
     this.#modalView.update(state);
-  }
-
-  get root() {
-    return this.#root;
   }
 }

@@ -1,9 +1,9 @@
 import fetchJson from '../lib/fetchJson.js';
 import { removeToken } from '../lib/tokenUtils.js';
 import HomeView from '../views/homeView.js';
-import Page from './page.js';
+import BasePage from './basePage.js';
 
-export default class HomePage extends Page {
+export default class HomePage extends BasePage {
   constructor(props) {
     super(props);
     this.view = new HomeView({ onLogout: this.#onLogout });

@@ -1,14 +1,14 @@
 import getElementsWithIds from '../lib/getElementsWithIds.js';
+import BaseView from './baseView.js';
 
-export default class RegisterSuccessView {
+export default class RegisterSuccessView extends BaseView {
   #props;
-  #root;
   #dom;
 
   constructor(props) {
+    super('div');
     this.#props = props;
-    this.#root = document.createElement('div');
-    this.#root.innerHTML = String.raw`
+    this.root.innerHTML = String.raw`
       <div class="row">
         <div class="col s12 m8 offset-m2 l6 offset-l3">
           <nav>
@@ -34,9 +34,9 @@ export default class RegisterSuccessView {
       </div>
     `;
 
-    this.#dom = getElementsWithIds(this.#root);
+    this.#dom = getElementsWithIds(this.root);
 
-    const sideNavElements = this.#root.querySelectorAll('.sidenav');
+    const sideNavElements = this.root.querySelectorAll('.sidenav');
     this.sideNavInstances = M.Sidenav.init(sideNavElements);
 
     this.#dom.loginBtn.addEventListener('click', this.#loginHandler);
@@ -48,8 +48,4 @@ export default class RegisterSuccessView {
     this.sideNavInstances[0].close();
     this.#props.onLogin();
   };
-
-  get root() {
-    return this.#root;
-  }
 }
