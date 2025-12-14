@@ -1,71 +1,57 @@
-import fetchAndLog from '../util/fetchAndLog.js';
-import initializeState from '../util/initializeState.js';
-import loadPage from '../util/loadPage.js';
-import logger from '../util/logger.js';
-import { removeToken } from '../util/tokenUtils.js';
-import createHomeView from '../views/homeView.js';
-import createLoginPage from './loginPage.js';
+import fetchJson from '../lib/fetchJson.js';
+import { removeToken } from '../lib/tokenUtils.js';
+import HomeView from '../views/homeView.js';
+import Page from './page.js';
 
-function createHomePage(state) {
-  const updateView = (updates) => {
-    state = { ...state, ...updates };
-    logger.debug('state', state);
-    view.update(state);
-  };
+export default class HomePage extends Page {
+  constructor(props) {
+    super(props);
+    this.view = new HomeView({ onLogout: this.#onLogout });
+    this.#getProfile();
+  }
 
-  const onLogout = async () => {
-    removeToken();
-
-    // reset state
-    state = initializeState();
+  #onLogout = async () => {
+    this.state.clear();
 
     try {
-      const response = await fetchAndLog('/user/logout', {
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Logout failed. Reason: HTTP ${response.status}`);
+      const result = await fetchJson('/user/logout', { method: 'POST' });
+      if (!result.ok) {
+        throw new Error(
+          result.message || `Logout failed. HTTP ${result.status}`
+        );
       }
-
-      loadPage(createLoginPage, state);
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      this.state.update({ error: error.message });
+    } finally {
+      removeToken();
+      this.router.navigateTo('login');
     }
   };
 
-  const getProfile = async () => {
+  async #getProfile() {
     try {
-      const response = await fetchAndLog('/user/profile', {
+      const { token } = this.state.get();
+      if (!token) {
+        throw new Error('No token found');
+      }
+      const result = await fetchJson('/user/me', {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${state.token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        state = { ...state, error: data.message };
-        logger.debug('state', state);
+      if (!result.ok) {
+        this.state.update({ error: result.message });
         removeToken();
-        state = initializeState();
-        loadPage(createLoginPage, state);
+        this.state.clear();
+        this.router.navigateTo('login');
         return;
       }
 
-      updateView({ profile: data.message });
+      // Depending on server shape, prefer data.user; keep message for compatibility
+      const profile = result.data?.user ?? result.data?.message ?? null;
+      this.state.update({ profile });
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      this.state.update({ error: error.message });
     }
-  };
-
-  const view = createHomeView({ onLogout });
-  getProfile();
-
-  return view;
+  }
 }
-
-export default createHomePage;

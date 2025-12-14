@@ -1,50 +1,39 @@
-import fetchAndLog from '../util/fetchAndLog.js';
-import loadPage from '../util/loadPage.js';
-import logger from '../util/logger.js';
-import { putToken } from '../util/tokenUtils.js';
-import createLoginView from '../views/loginView.js';
-import createHomePage from './homePage.js';
-import createRegisterPage from './registerPage.js';
+import fetchJson from '../lib/fetchJson.js';
+import { putToken } from '../lib/tokenUtils.js';
+import LoginView from '../views/loginView.js';
+import Page from './page.js';
 
-function createLoginPage(state) {
-  const updateView = (updates) => {
-    state = { ...state, ...updates };
-    logger.debug('state', state);
-    view.update(state);
-  };
+export default class LoginPage extends Page {
+  constructor(props) {
+    super(props);
+    this.view = new LoginView({
+      onSubmit: this.#onSubmit,
+      onRegister: this.#onRegister,
+    });
+  }
 
-  const onSubmit = async (username, password) => {
+  #onSubmit = async (username, password) => {
     try {
-      const response = await fetchAndLog('/user/login', {
+      const result = await fetchJson('/user/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        body: { username, password },
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message);
+      if (!result.ok) {
+        throw new Error(result.message || 'Login failed');
       }
 
-      putToken(data.token);
-      state = { ...state, token: data.token, error: null };
+      const token = result.data?.token;
+      putToken(token);
+      this.state.update({ token, error: null });
 
-      loadPage(createHomePage, state);
+      this.router.navigateTo('home');
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      this.state.update({ error: error.message });
     }
   };
 
-  const onRegister = () => {
-    loadPage(createRegisterPage, state);
+  #onRegister = () => {
+    this.router.navigateTo('register');
   };
-
-  const view = createLoginView({ onSubmit, onRegister });
-
-  return view;
 }
-
-export default createLoginPage;

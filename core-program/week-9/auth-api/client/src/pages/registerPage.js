@@ -1,48 +1,34 @@
-import fetchAndLog from '../util/fetchAndLog.js';
-import loadPage from '../util/loadPage.js';
-import logger from '../util/logger.js';
-import createRegisterView from '../views/registerView.js';
-import createLoginPage from './loginPage.js';
-import createRegisterSuccessPage from './registerSuccessPage.js';
+import fetchJson from '../lib/fetchJson.js';
+import RegisterView from '../views/registerView.js';
+import Page from './page.js';
 
-function createRegisterPage(state) {
-  const updateView = (updates) => {
-    state = { ...state, ...updates };
-    logger.debug('state', state);
-    view.update(state);
-  };
+export default class RegisterPage extends Page {
+  constructor(props) {
+    super(props);
+    this.view = new RegisterView({
+      onSubmit: this.#onSubmit,
+      onLogin: this.#onLogin,
+    });
+  }
 
-  const onSubmit = async (username, password) => {
+  #onSubmit = async (username, password) => {
     try {
-      const response = await fetchAndLog('/user/register', {
+      const result = await fetchJson('/user/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        body: { username, password },
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message);
+      if (!result.ok) {
+        throw new Error(result.message || 'Register failed');
       }
 
-      logger.debug('response', data);
-
-      loadPage(createRegisterSuccessPage, state);
+      this.router.navigateTo('register-success');
     } catch (error) {
-      state = { ...state, error: error.message };
-      updateView(state);
+      this.state.update({ error: error.message });
     }
   };
 
-  const onLogin = () => {
-    loadPage(createLoginPage, state);
+  #onLogin = () => {
+    this.router.navigateTo('login');
   };
-
-  const view = createRegisterView({ onSubmit, onLogin });
-
-  return view;
 }
-
-export default createRegisterPage;

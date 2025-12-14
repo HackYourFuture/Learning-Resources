@@ -1,20 +1,12 @@
 import { compare, hash } from 'bcrypt';
 import { randomUUID } from 'crypto';
 import express from 'express';
+import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = 'eE8slP+RtiBVAH7zcY0vYttsKlDY5o0jeKLjEgSLllo=';
 // The higher the number, the more secure password but also slower
 const SALT_ROUNDS = 10;
-
-const HTTP_STATUS = {
-  200: 'OK',
-  201: 'Created',
-  204: 'No Content',
-  400: 'Bad Request',
-  401: 'Unauthorized',
-  404: 'Not Found',
-};
 
 class UserService {
   constructor() {
@@ -89,22 +81,26 @@ class UserController {
     }
     const existingUser = this.userService.getUserByUsername(username);
     if (existingUser) {
-      return res.status(400).json({ message: 'Username already exists' });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: 'Username already exists' });
     }
     const newUser = await this.userService.createUser({ username, password });
-    res.status(201).json(newUser);
+    res.status(StatusCodes.CREATED).json(newUser);
   }
 
   async login(req, res) {
     const { username, password } = req.body;
     if (!username || !password) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: 'Username and password are required' });
     }
     const user = await this.userService.validateUser(username, password);
     if (!user) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'Invalid username or password' });
     }
     const token = this.authService.generateToken(user);
     res.json({ token });
@@ -118,19 +114,25 @@ class UserController {
   getProfile(req, res) {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
-      return res.status(401).json({ message: 'Authorization header missing' });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'Authorization header missing' });
     }
     const token = authHeader.split(' ')[1];
     const decoded = this.authService.verifyToken(token);
     if (!decoded) {
-      return res.status(401).json({ message: 'Invalid or expired token' });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'Invalid or expired token' });
     }
     const user = this.userService.getUserById(decoded.id);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: 'User not found' });
     }
     // Return user profile
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       message: `You are currently logged in as ${user.username}`,
     });
   }
@@ -159,7 +161,7 @@ function start(app) {
     const originalJson = res.json;
     res.json = function (data) {
       console.log(
-        `Response status: ${res.statusCode} ${HTTP_STATUS[res.statusCode]}`
+        `Response status: ${res.statusCode} ${getReasonPhrase(res.statusCode)}`
       );
       console.log(`Response body: ${JSON.stringify(data, null, 2)}`);
       return originalJson.call(this, data);
@@ -170,7 +172,7 @@ function start(app) {
   app.post('/user/register', userController.register.bind(userController));
   app.post('/user/login', userController.login.bind(userController));
   app.post('/user/logout', userController.logout.bind(userController));
-  app.get('/user/profile', userController.getProfile.bind(userController));
+  app.get('/user/me', userController.getProfile.bind(userController));
 
   // Serve the front-end application from the `client` folder
   app.use(express.static('client'));
