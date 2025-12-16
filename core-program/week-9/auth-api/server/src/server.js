@@ -1,8 +1,8 @@
 import express from 'express';
-import { getReasonPhrase } from 'http-status-codes';
 import path from 'path';
 
 import AuthService from './auth-service.js';
+import { requestLogger, responseLogger } from './middleware.js';
 import UserController from './user-controller.js';
 import UserService from './user-service.js';
 
@@ -15,29 +15,9 @@ function start(app) {
 
   app.use(express.json());
 
-  // Request logging middleware
-  app.use((req, res, next) => {
-    console.log(`\nReceived request: ${req.method} ${req.url}`);
-    if (req.body) {
-      console.log(`Request body: ${JSON.stringify(req.body, null, 2)}`);
-    } else {
-      console.log('Request body: <empty>');
-    }
-    next();
-  });
-
-  // Response logging middleware
-  app.use((req, res, next) => {
-    const originalJson = res.json;
-    res.json = function (data) {
-      console.log(
-        `Response status: ${res.statusCode} ${getReasonPhrase(res.statusCode)}`
-      );
-      console.log(`Response body: ${JSON.stringify(data, null, 2)}`);
-      return originalJson.call(this, data);
-    };
-    next();
-  });
+  // Custom logging middleware
+  app.use(requestLogger);
+  app.use(responseLogger);
 
   app.post('/user/register', userController.register.bind(userController));
   app.post('/user/login', userController.login.bind(userController));
