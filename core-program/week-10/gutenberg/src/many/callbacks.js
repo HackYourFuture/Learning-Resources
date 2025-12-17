@@ -4,6 +4,11 @@ import path from 'path';
 import { analyze } from '../lib/analyze.js';
 const __dirname = import.meta.dirname;
 
+const dataDir = path.join(__dirname, '../../data');
+const mapperJsonPath = path.join(__dirname, '../../data/mapper.json');
+const commonJsonPath = path.join(__dirname, '../../data/common.json');
+const statsJsonPath = path.join(__dirname, '../../results/stats.json');
+
 function loadJsonFile(filePath, cb) {
   fs.readFile(filePath, 'utf-8', (err, data) => {
     if (err) {
@@ -33,12 +38,10 @@ function exitOnError(err, msg = 'Error') {
 function main() {
   const startTime = Date.now();
 
-  const dataDir = path.join(__dirname, '../../data');
-
-  loadJsonFile(path.join(dataDir, 'mapper.json'), (err, mapper) => {
+  loadJsonFile(mapperJsonPath, (err, mapper) => {
     exitOnError(err, 'Error loading mapper.json');
 
-    loadJsonFile(path.join(dataDir, 'common.json'), (err, commonData) => {
+    loadJsonFile(commonJsonPath, (err, commonData) => {
       exitOnError(err, 'Error loading common.json');
 
       const { commonWords } = commonData;
@@ -55,15 +58,11 @@ function main() {
           results.push({ ...descriptor, stats });
 
           if (--pending === 0) {
-            dumpStats(
-              results,
-              path.join(__dirname, '../../results/stats.json'),
-              (err) => {
-                exitOnError(err, 'Error dumping stats');
-                const endTime = Date.now();
-                console.log(`Execution time: ${endTime - startTime} ms`);
-              }
-            );
+            dumpStats(results, statsJsonPath, (err) => {
+              exitOnError(err, 'Error dumping stats');
+              const endTime = Date.now();
+              console.log(`Execution time: ${endTime - startTime} ms`);
+            });
           }
         });
       }
