@@ -1,34 +1,45 @@
-# Blocking Demo
+# Countdown Demo
 
-Folder: `1-blocking`
+This example demonstrates the negative impact of **blocking code** on web page responsiveness. In JavaScript, "blocking" code is code that prevents the browser from doing anything else, such as updating the UI or responding to user input, until it finishes running. In contrast, **non-blocking code** allows the browser to continue handling other tasks while waiting for an operation to complete.
 
-This example demonstrates the negative impact of **blocking code** on web page responsiveness. In JavaScript, "blocking" code is code that prevents the browser from doing anything else—such as updating the UI or responding to user input—until it finishes running. In contrast, **non-blocking code** allows the browser to continue handling other tasks while waiting for an operation to complete.
+The example implements a simple timer that counts down from 10 to 0 seconds. Each count is spoken aloud using the Web Speech API.
 
-The example implements a simple timer that counts down from 10 to 0 seconds. When the counter reaches zero, the application will play a beep sound.
-
-It provides two timer modes: a normal (non-blocking) mode using the standard `setTimeout` function, and a "blocking" mode using a custom `setTimeoutBlocking` function. The blocking version uses a "busy-wait loop"<sup>1</sup> that continually checks the system clock to see if the requested timeout has been reached. This simulates a long-running or CPU-intensive task.
+The example provides two timer modes: a normal (non-blocking) mode using the standard `setTimeout` function, and a "blocking" mode using a custom `setTimeoutBlocking` function. The blocking version uses a "busy-wait loop"<sup>1</sup> that continually checks the system clock to determine if the requested timeout has been reached. This simulates a long-running or CPU-intensive task.
 
 ## Usage
 
+### Non-Blocking Version
+
 1. Open the `index.html` file in a web browser (e.g., Chrome, Firefox, Edge).
 
-2. The example logs the countdown to the console, so please open the Developer Tools and select the Console tab when you run this example.
+2. Open the Developer Tools and select the Console tab to view the countdown logs.
 
-3. With the "Blocking" checkbox unchecked, click the "Start" button to start the timer. The timer will count down from 10 to 0, updating the displayed count every second. Let it run to completion and take note of the countdown in the developer console.
+3. Click the "Start" button to start the timer. The timer will count down from 10 to 0, speaking aloud and updating the count on the page every second. Observe the console output as the countdown completes.
 
-4. With the "Blocking" checkbox still unchecked, click the "Start" button again, and after a second or two, press the "Stop" button. Notice that the timer stops as expected.
+### Blocking Version
 
-5. Now, check the "Blocking" checkbox to use the blocking version of the timer. Press the "Start" button. Because JavaScript in the browser runs on a single-threaded event loop, blocking code prevents the browser from updating the UI or responding to user actions (e.g. "click" events). As a result, when the blocking timer is running:
+1. Modify the `index.html` file to load `blocking.js` instead of `non-blocking.js`. You can do this by changing the script tag at the bottom of the file:
 
-    - The "Start" button remains red (i.e., depressed).
-    - The counter display does not update.
-    - The "Stop" button is unresponsive.
+   ```html
+   <script src="blocking.js" type="module"></script>
+   ```
 
-    However, the console output will still show the countdown, and you will still hear a beep when the timer finishes.
+2. Save the changes to `index.html` and refresh the page in your web browser.
 
-**Takeaway:**  
+3. Click the "Start" button to start the timer. Because this version uses blocking code, you will notice:
+
+   - The "Start" button appears depressed and unresponsive.
+   - The counter display does not update.
+   - The spoken countdown stops after the first count (10).
+   - The "Stop" button is unresponsive.
+   - The console output still shows the countdown.
+
+Once the countdown reaches zero, the page becomes responsive again and the backlog of spoken counts (9 to 0) will be spoken aloud.
+
+**Takeaway:**
+
 Blocking code makes the web page unresponsive and leads to a poor user experience. Always write non-blocking, asynchronous code to keep your web apps smooth and interactive.
 
-Notes:
+## Notes
 
 1. A busy-wait loop is a loop that continuously checks a condition without yielding control to the event loop, effectively blocking the thread until the condition is met.
