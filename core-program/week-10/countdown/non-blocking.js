@@ -13,12 +13,13 @@ function timer(count) {
   }
 
   console.log('count:', count);
+  speak(count.toString());
+
   document.querySelector('#counter').textContent = count;
 
   // If the count reaches zero, we're done.
   if (count === 0) {
     isRunning = false;
-    speak('Countdown finished');
     return;
   }
 
