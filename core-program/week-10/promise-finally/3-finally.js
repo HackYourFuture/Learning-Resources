@@ -22,6 +22,7 @@ function whatIsTheMeaningOfLife() {
       process.stdout.write('\r');
     }, Math.floor(Math.random() * 5000) + 3000);
   }).finally(() => {
+    console.log();
     clearInterval(intervalTimer);
   });
 }

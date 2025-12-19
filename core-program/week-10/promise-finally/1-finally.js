@@ -2,8 +2,8 @@
 // after a promise is settled, regardless of whether it was resolved or rejected.
 // It also shows how to handle errors in a promise chain and ensure that cleanup
 // code runs.
-import cowsay from 'cowsay';
 import chalk from 'chalk';
+import cowsay from 'cowsay';
 
 function whatIsTheMeaningOfLife() {
   let count = 0;

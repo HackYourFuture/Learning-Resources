@@ -2,8 +2,8 @@
 // after a promise is settled, regardless of whether it was resolved or rejected.
 // It also shows how to handle errors in a promise chain and ensure that cleanup
 // code runs.
-import cowsay from 'cowsay';
 import chalk from 'chalk';
+import cowsay from 'cowsay';
 
 function whatIsTheMeaningOfLife() {
   let count = 0;
@@ -23,10 +23,12 @@ function whatIsTheMeaningOfLife() {
     }, Math.floor(Math.random() * 5000) + 3000);
   })
     .then((result) => {
+      console.log();
       clearInterval(intervalTimer);
       return result;
     })
     .catch((err) => {
+      console.log();
       clearInterval(intervalTimer);
       throw err; // Re-throw the error to be caught in the catch block below
     });
