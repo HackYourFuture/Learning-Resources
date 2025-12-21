@@ -1,7 +1,7 @@
-const STEP_SIZE_PX = 10;
+import WalkingCat from './ui.js ';
+
 const DANCE_TIME_MS = 5000;
-const DANCING_CAT_URL =
-  'https://media1.tenor.com/images/2de63e950fb254920054f9bd081e8157/tenor.gif';
+const STEP_SIZE_PX = 10;
 
 function wait(time) {
   return new Promise((resolve) => {
@@ -9,44 +9,33 @@ function wait(time) {
   });
 }
 
-async function walk(img, startPos, stopPos, stepInterval) {
+async function walk(cat, startPos, stopPos) {
+  const stepInterval = 40 + 12 * cat.num;
   let position = startPos;
   while (position < stopPos) {
-    img.style.left = `${position}px`;
+    cat.moveTo(position);
+    await wait(stepInterval);
     position += STEP_SIZE_PX;
-    await wait(stepInterval * 4);
   }
 }
 
-async function dance(img) {
-  const savedSrc = img.src;
-  img.src = DANCING_CAT_URL;
+async function dance(cat) {
+  cat.showDancing();
   await wait(DANCE_TIME_MS);
-  img.src = savedSrc;
+  cat.showWalking();
 }
 
-function createCatImage(top, imgWidth) {
-  const img = document.createElement('img');
-  img.src = 'http://www.anniemation.com/clip_art/images/cat-walk.gif';
-  img.style.top = `${top}px`;
-  img.style.left = `${-imgWidth}px`;
-  document.body.append(img);
-  return img;
-}
-
-async function catWalk(catIndex = 0) {
-  const top = catIndex * 220;
-  const stepInterval = 20 - catIndex * 3;
-  const imgWidth = 300;
-  const startPos = -imgWidth;
-  const centerPos = (window.innerWidth - imgWidth) / 2;
+async function catWalk(catNum) {
+  const cat = new WalkingCat(catNum);
+  const startPos = -cat.width;
+  const centerPos = (window.innerWidth - cat.width) / 2;
   const stopPos = window.innerWidth;
 
-  const img = createCatImage(top, imgWidth);
-  await walk(img, startPos, centerPos, stepInterval, catIndex);
-  await dance(img, catIndex);
-  await walk(img, centerPos, stopPos, stepInterval, catIndex);
-  return img.remove();
+  cat.showWalking();
+  await walk(cat, startPos, centerPos);
+  await dance(cat);
+  await walk(cat, centerPos, stopPos);
+  cat.remove();
 }
 
 const NUM_CATS = 3;
