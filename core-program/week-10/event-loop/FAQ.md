@@ -1,7 +1,6 @@
 # FAQ on Promises, Event Loop, and Microtasks in JavaScript
 
-(courtesy of NotebookLM)
-
+(Create with the help of NotebookLM)
 
 **What is the fundamental interaction between promises, the event loop, and microtasks?**
 
@@ -18,7 +17,7 @@ Yes, each call to `.then()` or `.catch()` on a promise returns a new promise. Th
 **What is the purpose of using a custom promise implementation in the provided examples?**
 
 The `CustomPromise` class is a simplified, custom implementation of the native Promise object. Its primary purpose in the examples is to provide visibility into the internal workings of promises. By logging events such as promise creation, fulfillment, rejection, and microtask enqueuing and execution, `CustomPromise` helps illustrate how promises interact with the event loop and microtask queue. This logging allows for a deeper understanding of the asynchronous execution flow without requiring users to delve into the complex internal implementation of native promises.
-  
+
 **How does a fulfilled promise chain execute, particularly when `.catch()` is included in the chain?**
 
 In a fulfilled promise chain, only the `.then()` callbacks are executed. When a promise in the chain is fulfilled and has a `.then()` attached, a microtask is enqueued to run the `.then()`'s callback. The value returned by the `.then()` callback determines the fulfillment value of the next promise in the chain. `.catch()` methods in a fulfilled chain are effectively skipped in terms of executing their `onRejected` handler. However, they still return a new promise which, in this case, is fulfilled with the value of the preceding promise. This is why a `.then()` following a `.catch()` in a fulfilled chain can still execute.
