@@ -1,4 +1,4 @@
-import { CustomPromise as Promise } from './lib/custom-promise.js';
+// import { CustomPromise as Promise } from './lib/custom-promise.js';
 
 function whatIsTheMeaningOfLife() {
   return new Promise((resolve, reject) => {
@@ -11,7 +11,7 @@ function whatIsTheMeaningOfLife() {
 }
 
 function ask() {
-  let text = new Date().toISOString() + ' ';
+  let text = new Date().toLocaleTimeString('nl-NL') + ' ';
 
   return whatIsTheMeaningOfLife()
     .then((result) => {
@@ -21,8 +21,7 @@ function ask() {
       text += `Error: ${err.message}`;
     })
     .then(() => {
-      console.log(text);
-      return Promise.resolve(); // fsPromises.appendFile('answers.log', text + '\n');
+      return console.log(text);
     })
     .catch((err) => {
       console.error('Failed to write to log file:', err);
