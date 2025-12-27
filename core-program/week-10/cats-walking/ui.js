@@ -41,6 +41,10 @@ class WalkingCat {
   remove() {
     this.#img.remove();
   }
+
+  static onStart(startHandler) {
+    document.querySelector('button').addEventListener('click', startHandler);
+  }
 }
 
 export default WalkingCat;
