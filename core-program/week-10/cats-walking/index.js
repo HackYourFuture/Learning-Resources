@@ -47,8 +47,8 @@ async function catsWalk() {
       promises.push(catWalk(i));
     }
 
-    await Promise.all(promises);
+    await Promise.race(promises);
   }
 }
 
-document.querySelector('button').addEventListener('click', catsWalk);
+WalkingCat.onStart(catsWalk);

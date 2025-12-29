@@ -45,7 +45,6 @@ The server listens on `http://localhost:3000`.
 ### Logout
 
 - **POST** `/user/logout`
-- **Auth**: token optional; no server-side token storage
 - **Responses**:
   - `200 OK`: `{ "message": "Logged out successfully" }`
 
@@ -71,15 +70,15 @@ For production APIs, you should never expose your secrets in code that is pushed
 1. Install dotenv (optional helper for local dev): `npm install dotenv`.
 2. Create a `.env` file (not checked in) alongside `server.js`:
 
-    ```bash
-    JWT_SECRET="<your-long-random-secret>"
-    ```
+   ```bash
+   JWT_SECRET="<your-long-random-secret>"
+   ```
 
 3. Add `.env` to `.gitignore` so it never gets committed:
 
-    ```bash
-    echo ".env" >> .gitignore
-    ```
+   ```bash
+   echo ".env" >> .gitignore
+   ```
 
 4. In your server code, load the secret with `import 'dotenv/config';` before using `process.env.JWT_SECRET`.
 
