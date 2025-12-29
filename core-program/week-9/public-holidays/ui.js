@@ -1,7 +1,6 @@
-import { loadHolidays } from './services.js';
-
 class UI {
-  initialize() {
+  initialize(loaderFn) {
+    this.loaderFn = loaderFn;
     this.dom = this.getElementsWithIds(document);
 
     // Populate year select dropdown
@@ -11,7 +10,7 @@ class UI {
     this.dom.loadBtn.addEventListener('click', () => {
       this.showLoading();
       const year = this.dom.yearSelect.value;
-      loadHolidays(year, this);
+      this.loaderFn(year);
       this.hideLoading;
     });
   }
@@ -122,4 +121,6 @@ class UI {
   }
 }
 
-export default UI;
+export const ui = new UI();
+export const renderHolidays = ui.renderHolidays.bind(ui);
+export const showError = ui.showError.bind(ui);

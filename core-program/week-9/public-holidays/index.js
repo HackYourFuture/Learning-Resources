@@ -1,8 +1,4 @@
-import UI from './ui.js';
+import { loadHolidays } from './services.js';
+import { ui } from './ui.js';
 
-function main() {
-  const ui = new UI();
-  ui.initialize();
-}
-
-window.addEventListener('load', main);
+window.addEventListener('load', () => ui.initialize(loadHolidays));

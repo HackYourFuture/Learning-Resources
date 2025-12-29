@@ -1,3 +1,5 @@
+// import { renderHolidays, showError } from './ui.js';
+
 function getRequest(url, onSuccess, onError) {
   const xhr = new XMLHttpRequest();
 
@@ -23,7 +25,7 @@ function getRequest(url, onSuccess, onError) {
   xhr.send();
 }
 
-export function loadHolidays(year, ui) {
+export function loadHolidays(year) {
   getRequest(
     `<url>`, //TODO: Replace <url> with the actual API endpoint
     (data) => {
