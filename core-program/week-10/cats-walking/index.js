@@ -47,7 +47,7 @@ async function catsWalk() {
       promises.push(catWalk(i));
     }
 
-    await Promise.race(promises);
+    await Promise.all(promises);
   }
 }
 
