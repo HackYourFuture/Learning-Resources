@@ -20,10 +20,10 @@ export default class DashboardPage {
 
     this.#view = new DashboardView(container);
 
-    const hostname = window.location.hostname || 'localhost';
-    const port = window.location.port || '3000';
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host || 'localhost:3000';
 
-    this.#wsClient = new WebSocketClient(`ws://${hostname}:${port}`, {
+    this.#wsClient = new WebSocketClient(`${protocol}//${host}`, {
       onMessage: (message) => this.#handleMessage(message),
       onStatusChange: (status) => state.update({ connectionStatus: status }),
     });

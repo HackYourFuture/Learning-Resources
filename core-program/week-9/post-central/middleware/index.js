@@ -15,7 +15,7 @@ export const setupMiddleware = (app, __dirname) => {
   app.use(express.json());
   app.use(
     '/client',
-    express.static(path.join(__dirname, '../../week-10/post-client'))
+    express.static(path.join(__dirname, 'post-client'))
   );
   app.use('/portal', express.static(path.join(__dirname, 'portal')));
 
