@@ -22,6 +22,10 @@ const server = net.createServer((socket) => {
       body,
     ].join("\r\n");
 
+    console.log(chalk.yellow.bold("Raw HTTP response:"));
+    console.log(response);
+    console.log(chalk.gray("─".repeat(60)));
+
     socket.end(response);
   });
 });
