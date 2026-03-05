@@ -7,11 +7,6 @@ info:
     name: API Support
 servers:
   - url: /
-    description: Current server
-  - url: http://localhost:3000
-    description: Local server
-  - url: https://postcentral.hyf.dev
-    description: Production server
 components:
   securitySchemes:
     bearerAuth:
