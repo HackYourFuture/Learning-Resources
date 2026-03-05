@@ -1,6 +1,6 @@
 # Architecture: Observable State + Reactive View
 
-This document specifies the frontend architecture shared by the **portal** (`week-9/post-central/portal/`) and **post-client** (`week-10/post-client/`). It is intended as a blueprint that Claude Code can follow to scaffold a new vanilla JS app, and as a reference for instructors.
+This document specifies the frontend architecture shared by the **portal** (`week-9/post-central/portal/`) and **post-client** (`week-9/post-central/post-client/`). It is intended as a blueprint that Claude Code can follow to scaffold a new vanilla JS app, and as a reference for instructors.
 
 ## 1. Overview
 

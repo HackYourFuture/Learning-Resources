@@ -25,7 +25,7 @@ The client runs locally in the browser via Live Server. It makes cross-origin re
 
 ### Trainees (pairs)
 
-1. Open the `post-client` folder in VS Code
+1. Open the `post-client` folder (inside `week-9/post-central`) in VS Code
 2. Open `src/services/constants.js` and set `BASE_URL` to the instructor's IP (e.g. `'http://192.168.1.42:3000'`)
 3. Rename `src/services/services.starter.js` to `src/services/services.js` (replacing the existing file)
 4. Right-click `index.html` → **"Open with Live Server"**
@@ -142,7 +142,7 @@ _Pairs implement `editPost()` and `deletePost()`._
 
 **Goal:** Verify all implementations with automated tests.
 
-_Pairs run `npm test` from the `post-client` folder._
+_Pairs run `npm test` from the `post-client` folder (inside `week-9/post-central`)._
 
 - The tests mock `fetch()` — no running server is needed
 - Each test checks that the function calls the right URL with the right method, headers, and body

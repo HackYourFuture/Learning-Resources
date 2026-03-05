@@ -1,2 +1,5 @@
 data/
 .env
+
+# Trainee implementation file (created from .starter.js)
+post-client/src/services/services.js

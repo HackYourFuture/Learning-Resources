@@ -144,5 +144,3 @@ vite.config.ts.timestamp-*
 
 **/*.solution.js
 
-# Trainee implementation files (created from .starter.js)
-post-client/src/services/services.js

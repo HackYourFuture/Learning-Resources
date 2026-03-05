@@ -21,23 +21,23 @@ week-9/     REST APIs & authentication
 ├── simple-api/        Minimal Express REST API demo
 ├── auth-api/          JWT authentication demo (server + client)
 ├── post-central/      Full-featured educational API (Express + WebSocket + OpenAPI)
+│   └── post-client/   Web client for post-central (trainee assignment)
 └── public-holidays/   External API integration demo (browser fetch)
 week-10/    Promises, async/await & fetch()
 ├── event-loop/        Promise & microtask visualization
 ├── promise-finally/   Promise.finally() patterns
 ├── countdown/         Blocking vs non-blocking code
 ├── deck-of-cards/     Fetch API with external API
-├── post-cli/          CLI client for post-central (trainee assignment)
-└── post-client/       Web client for post-central (trainee assignment)
+└── post-cli/          CLI client for post-central (trainee assignment)
 ```
 
 ### Post Central ecosystem (the main interconnected project)
 
 - **`week-9/post-central/`** — The backend API server (Express v5, JWT auth, WebSocket, OpenAPI docs)
+- **`week-9/post-central/post-client/`** — Web client assignment where trainees implement service functions against post-central
 - **`week-10/post-cli/`** — CLI client assignment where trainees implement `fetch()` calls against post-central
-- **`week-10/post-client/`** — Web client assignment where trainees implement service functions against post-central
 
-  Both week-10 clients depend on post-central running at `http://localhost:3000`.
+  Both clients depend on post-central running at `http://localhost:3000`.
 
 ## Commands
 
@@ -64,10 +64,10 @@ npm run test:post
 npm run test:crud
 ```
 
-### post-client (week-10)
+### post-client (week-9/post-central)
 
 ```bash
-cd week-10/post-client
+cd week-9/post-central/post-client
 npm install
 npm test           # run vitest tests
 ```
