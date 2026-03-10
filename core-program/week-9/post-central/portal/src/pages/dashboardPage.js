@@ -27,7 +27,15 @@ export default class DashboardPage {
 
     this.#wsClient = new WebSocketClient(`${protocol}//${host}`, {
       onMessage: (message) => this.#handleMessage(message),
-      onStatusChange: (status) => state.update({ connectionStatus: status }),
+      onStatusChange: (status) => {
+        // Clear posts on reconnect so the server's full post list
+        // doesn't duplicate what's already in state.
+        if (status === 'connected') {
+          state.update({ posts: [], connectionStatus: status });
+        } else {
+          state.update({ connectionStatus: status });
+        }
+      },
     });
 
     this.#audioCtx = new AudioContext();

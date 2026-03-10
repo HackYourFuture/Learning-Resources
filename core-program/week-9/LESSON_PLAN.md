@@ -132,7 +132,7 @@ The Post Central API has one endpoint that does not require authentication: `GET
 **Discussion points for instructors walking around:**
 
 - The Scalar docs are generated from an OpenAPI specification — a standard way to describe APIs
-- Notice that some endpoints have a lock icon — these require a token
+- Notice that some endpoints show an authentication requirement — these require a token
 - Point out the request and response schemas
 
 ## 6. Exercise 3: Register and Login with curl (8 min)
