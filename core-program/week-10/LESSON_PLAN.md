@@ -1,6 +1,6 @@
 # Lesson Plan: Building a Web Client with fetch()
 
-- **Duration:** 60 minutes
+- **Duration:** 45 minutes
 - **Topic:** Using `fetch()` to connect a web UI to a REST API
 - **Prior knowledge:** HTTP methods, API endpoints (week-9), basic `fetch()` (deck-of-cards)
 - **Tools:** VS Code with Live Server, browser DevTools
@@ -35,28 +35,25 @@ The client runs locally in the browser via Live Server. It makes cross-origin re
 
 | Time | Section | Format |
 | --- | --- | --- |
-| 0–5 min | Introduction | Instructor talk |
-| 5–10 min | Demo + setup | Instructor demo + trainees |
-| 10–18 min | Exercise 1: getHello + login | Instructor-led → pair work |
-| 18–28 min | Exercise 2: getProfile + getMyPosts | Pair work |
-| 28–40 min | Exercise 3: createPost | Pair work |
-| 40–52 min | Exercise 4: editPost + deletePost | Pair work |
-| 52–58 min | Exercise 5: Run all tests | Pairs |
-| 58–60 min | Wrap-up | Instructor talk |
+| 0–3 min | Introduction | Instructor talk |
+| 3–8 min | Demo + setup | Instructor demo + trainees |
+| 8–15 min | Exercise 1: getHello + login | Instructor-led → pair work |
+| 15–23 min | Exercise 2: getProfile + getMyPosts | Pair work |
+| 23–33 min | Exercise 3: createPost | Pair work |
+| 33–43 min | Exercise 4: editPost + deletePost | Pair work |
+| 43–45 min | Wrap-up | Instructor talk |
 
 ---
 
-## 1. Introduction (5 min)
+## 1. Introduction (3 min)
 
 _Instructor sets the scene._
 
 Explain what trainees will be doing in this session:
 
-- You know Post Central from last week — you used curl, Postman, and the Scalar docs to interact with it
-- This week you will do the same thing, but with **JavaScript** — you will write `fetch()` calls that connect a web UI to the API
+- You know Post Central from last week — you used curl, Postman, and the Scalar docs to interact with it. This week you do the same thing, but with **JavaScript** using `fetch()` calls that connect a web UI to the API
 - The web application is already built. You are implementing the **service functions** that talk to the server
 - The `register()` function is already implemented as a template — you will follow the same pattern for the other six functions
-- By the end of this session, you will have a fully working web client
 
 ## 2. Demo + Setup (5 min)
 
@@ -67,7 +64,7 @@ _Instructor demonstrates the finished client, then trainees set up._
 3. **Trainees set up** — follow the setup steps above. The instructor writes the server IP address on the board.
 4. **Verify** — trainees should see the client load but get "Not implemented" errors. This confirms their setup is correct.
 
-## 3. Exercise 1: getHello + login (8 min)
+## 3. Exercise 1: getHello + login (7 min)
 
 **Goal:** Implement the two simplest functions to get the app working.
 
@@ -84,7 +81,7 @@ _Pairs implement `login()` independently._
 
 **Verify:** Trainees can register and log in. The instructor's portal shows new users appearing.
 
-## 4. Exercise 2: getProfile + getMyPosts (10 min)
+## 4. Exercise 2: getProfile + getMyPosts (8 min)
 
 **Goal:** Introduce the `Authorization` header.
 
@@ -105,7 +102,7 @@ _Pairs implement `getMyPosts()` independently._
 
 **Verify:** After logging in, the home page loads (but empty — no posts yet).
 
-## 5. Exercise 3: createPost (12 min)
+## 5. Exercise 3: createPost (10 min)
 
 **Goal:** Combine authentication with a request body.
 
@@ -123,7 +120,7 @@ _Pairs implement `createPost()`._
 - Why does `createPost` need a body but `getMyPosts` does not?
 - What happens if you forget the `Authorization` header? (401 Unauthorized)
 
-## 6. Exercise 4: editPost + deletePost (12 min)
+## 6. Exercise 4: editPost + deletePost (10 min)
 
 **Goal:** Introduce PUT and DELETE methods with dynamic URLs.
 
@@ -138,25 +135,14 @@ _Pairs implement `editPost()` and `deletePost()`._
 
 **Bonus:** Try editing or deleting someone else's post. What happens? (403 Forbidden — this is authorization vs authentication)
 
-## 7. Exercise 5: Run Tests (6 min)
-
-**Goal:** Verify all implementations with automated tests.
-
-_Pairs run `npm test` from the `post-client` folder (inside `week-9/post-central`)._
-
-- The tests mock `fetch()` — no running server is needed
-- Each test checks that the function calls the right URL with the right method, headers, and body
-- If any tests fail, trainees fix their implementation
-
-**Discussion point:** These tests work without a server because they mock `fetch()`. This is a common pattern in real-world applications — you test your code without depending on external services.
-
-## 8. Wrap-up (2 min)
+## 7. Wrap-up (2 min)
 
 _Instructor-led recap._
 
 - You used `fetch()` to connect a real web UI to a REST API — the same API you explored manually last week
 - Every web application works this way: a front end sending HTTP requests to an API
 - The pattern is always the same: build a URL, set headers, optionally add a body, send the request, handle the response
+- **Self-check:** Trainees should run `npm test` from the `post-client` folder after class to verify their implementations. The tests mock `fetch()` — no running server is needed.
 - **Homework:** The `post-cli` exercise uses the same patterns but in Node.js on the command line
 
 ---
@@ -167,8 +153,8 @@ _Instructor-led recap._
 
 - Exercises 2–4 are the core of the lesson — protect this time
 - If pairs finish early, suggest looking at the JSDoc comments and thinking about how they could reduce repetition across the functions
-- If running behind, exercise 5 (tests) can be shortened to a quick instructor demo
 - The introduction and demo can be compressed if trainees are already settled
+- Tests are now a take-home activity — remind trainees to run `npm test` after class
 
 ### Common issues
 
@@ -182,7 +168,7 @@ _Instructor-led recap._
 
 - One instructor leads from the front (intro, demo, walk-throughs, wrap-up)
 - Both instructors circulate during pair work to help trainees who are stuck
-- Prioritise pairs who have not completed exercise 2 by minute 25
+- Prioritise pairs who have not completed exercise 2 by minute 20
 
 ### Connection to week-9
 

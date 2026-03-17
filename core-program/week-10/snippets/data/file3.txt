@@ -1,0 +1,2 @@
+Hard to read — indentation keeps growing to the right
+Hard to maintain — adding a step means nesting deeper
