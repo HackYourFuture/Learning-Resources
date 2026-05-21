@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO 1: Add a step to set up Python 3.11.
+      # WHY pin the version: CI runners have a default Python version that can differ
+      # from your laptop. Pinning to 3.11 guarantees the same interpreter locally and
+      # in CI, so version-specific behaviour is not a source of surprises.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # TODO 2: Add a step to install pytest.
+      # WHY not pip install -r requirements.txt: smoke tests often only need pytest.
+      # Installing just pytest keeps CI fast. Once you add application dependencies,
+      # switch to `pip install -r requirements.txt` so all imports resolve correctly.
+      - name: Install pytest
+        run: pip install pytest
+
+      # TODO 3: Add a step to run pytest.
+      # WHY -q: quiet mode prints only failures and a summary line. Verbose output
+      # makes it harder to spot the actual failure in CI logs.
+      - name: Run tests
+        run: pytest -q
