@@ -31,7 +31,7 @@ uv lock
    ```
    API key present: True
    ```
-4. Edit only `pipeline.py` (add a comment) and build again. Confirm the `uv sync` layer stays cached.
+4. Edit only `src/pipeline.py` (add a comment) and build again. Confirm the `uv sync` layer stays cached.
 5. Add a second dependency to `pyproject.toml`, run `uv lock` to update `uv.lock`, and build again. Confirm `uv sync` now reruns.
 6. **Intentional failure:** bump the version in `pyproject.toml` without running `uv lock`. Try `uv sync --frozen` locally. Read the error — this is exactly what CI should throw when a lock file is stale.
 

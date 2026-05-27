@@ -9,13 +9,13 @@ FROM python:3.11-slim
 # accidentally writing files into system directories like /usr or /.
 WORKDIR /app
 
-# TODO 4: Copy the pipeline.py source file into the container.
-# WHY COPY pipeline.py .: copies only the script, not the whole project. Smaller context
-# means faster builds and no risk of leaking .env or other local files.
-COPY pipeline.py .
+# TODO 4: Copy the src/ folder into the container.
+# WHY COPY src/ src/: copies only the source directory, not the whole project. Smaller
+# context means faster builds and no risk of leaking .env or other local files.
+COPY src/ src/
 
 # TODO 5: Set the default command to run the pipeline module.
 # WHY CMD vs RUN: RUN executes at build time; CMD sets the default at run time.
 # Using a JSON array ("exec form") avoids spawning a shell, so signals like SIGTERM
 # reach the Python process directly instead of being swallowed by a shell wrapper.
-CMD ["python", "pipeline.py"]
+CMD ["python", "src/pipeline.py"]

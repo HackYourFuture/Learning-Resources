@@ -28,10 +28,11 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 # TODO 5: Copy the rest of the source code.
-COPY . .
+# WHY copy src/ separately: keeps source code changes from busting the uv sync layer.
+COPY src/ src/
 
 # TODO 6: Set the default run command using uv run.
 # WHY uv run: uv run activates the managed virtual environment and then executes
 # the command. This is the correct way to use the uv-managed venv inside Docker
 # rather than manually sourcing the venv or relying on PATH manipulation.
-CMD ["uv", "run", "python", "pipeline.py"]
+CMD ["uv", "run", "python", "src/pipeline.py"]

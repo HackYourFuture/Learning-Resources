@@ -19,6 +19,6 @@ RUN pip install -r requirements.txt
 # WHY copy source code after pip install: source code changes on every feature commit.
 # Placing it after the dependency layer means code edits only invalidate this final
 # COPY layer, not the expensive install step above.
-COPY . .
+COPY src/ src/
 
-CMD ["python", "pipeline.py"]
+CMD ["python", "src/pipeline.py"]

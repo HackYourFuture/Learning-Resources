@@ -13,4 +13,4 @@ WORKDIR /app
 COPY . .
 RUN pip install -r requirements.txt
 
-CMD ["python", "pipeline.py"]
+CMD ["python", "src/pipeline.py"]

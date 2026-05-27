@@ -2,8 +2,6 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY pipeline.py .
-
 # TODO 1: Add an ARG instruction for BUILD_SHA with no default value.
 # WHY ARG not ENV: ARG values are available only during the build phase.
 # They do not appear in the final image's environment or in `docker inspect` output.
@@ -19,4 +17,6 @@ ARG BUILD_SHA
 # label the image instead: LABEL git-sha=$BUILD_SHA
 RUN echo "Building SHA: $BUILD_SHA"
 
-CMD ["python", "pipeline.py"]
+COPY src/ src/
+
+CMD ["python", "src/pipeline.py"]

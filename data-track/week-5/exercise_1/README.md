@@ -4,7 +4,7 @@ Package a small Python script into a Docker image and run it with an environment
 
 ## Setup
 
-No extra dependencies. `pipeline.py` uses only the standard library.
+No extra dependencies. `src/pipeline.py` uses only the standard library.
 
 ## Task
 
@@ -34,5 +34,5 @@ No extra dependencies. `pipeline.py` uses only the standard library.
 
 ## Stretch
 
-- Change the `CMD` to use the exec form (`["python", "pipeline.py"]`) if you used the shell form. What is the difference?
+- Change the `CMD` to use the exec form (`["python", "src/pipeline.py"]`) if you used the shell form. What is the difference?
 - Add a `LABEL maintainer="yourname"` instruction. Run `docker inspect pipeline-practice:1.0` and find it.

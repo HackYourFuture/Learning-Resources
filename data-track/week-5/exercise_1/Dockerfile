@@ -7,9 +7,9 @@ WORKDIR ???
 # TODO 3: Copy requirements.txt into the container.
 #         (This exercise has no requirements.txt — skip this step.)
 
-# TODO 4: Copy the pipeline.py source file into the container.
+# TODO 4: Copy the src/ folder into the container.
 COPY ??? ???
 
 # TODO 5: Set the default command to run the pipeline module.
-#         Use: python pipeline.py
+#         Use: python src/pipeline.py
 CMD ???

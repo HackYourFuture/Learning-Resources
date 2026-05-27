@@ -19,20 +19,20 @@ Work through them in order. Exercises 1–4 build on each other (pipeline → ca
 ```text
 week-5/
 ├── exercise_1/
-│   ├── pipeline.py           # starter pipeline script
+│   ├── src/pipeline.py       # starter pipeline script
 │   ├── Dockerfile            # student fills the TODOs
 │   ├── README.md
 │   └── solutions/
 │       └── Dockerfile        # reference answer with # WHY comments
 ├── exercise_2/
-│   ├── pipeline.py
+│   ├── src/pipeline.py
 │   ├── requirements.txt
 │   ├── Dockerfile            # BAD ordering — student fixes it
 │   ├── README.md
 │   └── solutions/
 │       └── Dockerfile
 ├── exercise_3/
-│   ├── pipeline.py
+│   ├── src/pipeline.py
 │   ├── pyproject.toml
 │   ├── uv.lock
 │   ├── Dockerfile            # student fills the TODOs
@@ -54,7 +54,7 @@ week-5/
 │       ├── test_smoke.py
 │       └── ci.yml
 ├── exercise_6/
-│   ├── pipeline.py
+│   ├── src/pipeline.py
 │   ├── .env.example
 │   ├── Dockerfile
 │   ├── README.md
