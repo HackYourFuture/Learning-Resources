@@ -25,6 +25,9 @@ orders = pd.read_csv(csv_data)
 # TODO 1: Print '--- info ---', then call orders.info().
 # Print '--- describe ---', then print(orders.describe()).
 # What dtype does pandas infer for 'amount'? What does describe() say about it?
+print('--- info ---')
+orders.info()
+print('--- describe ---')
 
 # TODO 2: Print '--- missing values ---', then count missing values per column.
 # Hint: combine .isnull() and .sum().

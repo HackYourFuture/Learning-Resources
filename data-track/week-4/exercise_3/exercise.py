@@ -3,9 +3,11 @@
 Aggregate the orders DataFrame by region, then add a derived column
 using transform so every row knows its region's average.
 """
+from numpy import rint
+import pandas as pd
 from io import StringIO
 
-import pandas as pd
+
 
 # Setup block
 _csv = StringIO(
@@ -24,10 +26,17 @@ orders["amount"] = orders["amount"].fillna(0)
 # Use groupby().agg() with a dict: {'amount': ['sum', 'count']}.
 # Assign the result to region_summary and print it.
 
+summery= orders.groupby('region').agg({'amount': ['sum', 'count']})
+print(summery)
+
+
 # TODO 2: Add a column 'region_avg' to the original orders DataFrame
 # with the average order amount per region.
 # Use groupby().transform('mean') so the result aligns with the original index.
 # Assign to orders['region_avg'].
+
+orders['region_avg'] = orders.groupby('region')['amount'].transform('mean')
+
 
 # TODO 3: Verify that 'region_avg' is the same for all rows in the same region.
 # Print orders[['order_id', 'region', 'amount', 'region_avg']].
@@ -39,6 +48,11 @@ orders["amount"] = orders["amount"].fillna(0)
 # BE       90.0     1
 # DE      200.0     1
 # NL      170.0     3   (120 + 0 + 50)
+
+print('--- region summary ---')
+print (orders[['order_id', 'region', 'amount', 'region_avg']])
+print(orders.groupby('region')['region_avg'].count())
+print('--- end of region summary ---')
 
 # Expected region_avg (NL rows all share the same value):
 #    order_id region  amount  region_avg

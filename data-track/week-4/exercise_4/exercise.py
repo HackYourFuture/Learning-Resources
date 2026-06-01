@@ -31,6 +31,9 @@ customers = pd.DataFrame(
 # TODO 1: Join orders with customers using a left join on customer_id.
 # Assign the result to enriched and print it.
 
+enriched = orders.merge(customers, on='customer_id', how='left')
+print(enriched)
+
 # TODO 2: Count how many orders belong to each segment.
 # Use groupby('segment').size() or value_counts().
 # Print the result.
@@ -46,3 +49,6 @@ customers = pd.DataFrame(
 # Expected segment order counts:
 # retail    3
 # b2b       2
+
+customers.groupby('segment').size()
+
