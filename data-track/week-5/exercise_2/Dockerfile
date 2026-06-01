@@ -10,7 +10,8 @@ WORKDIR /app
 #         Then reorder the instructions so dependency installs are cached
 #         separately from source code changes.
 
-COPY . .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+COPY src/ src/
 CMD ["python", "src/pipeline.py"]
