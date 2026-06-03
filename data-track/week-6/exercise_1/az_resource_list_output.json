@@ -1,0 +1,55 @@
+[
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.Storage/storageAccounts/stweatherdev01",
+    "name": "stweatherdev01",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "westeurope",
+    "kind": "StorageV2",
+    "sku": {"name": "Standard_LRS", "tier": "Standard"},
+    "tags": {"env": "dev", "owner": "data-track"}
+  },
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.DBforPostgreSQL/flexibleServers/pg-weather-dev",
+    "name": "pg-weather-dev",
+    "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+    "location": "westeurope",
+    "sku": {"name": "Standard_B1ms", "tier": "Burstable"},
+    "tags": {"env": "dev", "owner": "data-track"}
+  },
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.App/managedEnvironments/env-weather-dev",
+    "name": "env-weather-dev",
+    "type": "Microsoft.App/managedEnvironments",
+    "location": "westeurope",
+    "tags": {"env": "dev", "owner": "data-track"}
+  },
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.App/jobs/job-weather-ingest",
+    "name": "job-weather-ingest",
+    "type": "Microsoft.App/jobs",
+    "location": "westeurope",
+    "tags": {"env": "dev", "owner": "data-track"}
+  },
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.ContainerRegistry/registries/acrweatherdev",
+    "name": "acrweatherdev",
+    "type": "Microsoft.ContainerRegistry/registries",
+    "location": "westeurope",
+    "sku": {"name": "Basic", "tier": "Basic"},
+    "tags": {"env": "dev", "owner": "data-track"}
+  },
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.KeyVault/vaults/kv-weather-dev",
+    "name": "kv-weather-dev",
+    "type": "Microsoft.KeyVault/vaults",
+    "location": "westeurope",
+    "tags": {"env": "dev", "owner": "data-track"}
+  },
+  {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-weather-dev/providers/Microsoft.OperationalInsights/workspaces/log-weather-dev",
+    "name": "log-weather-dev",
+    "type": "Microsoft.OperationalInsights/workspaces",
+    "location": "westeurope",
+    "tags": {"env": "dev", "owner": "data-track"}
+  }
+]
