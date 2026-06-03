@@ -76,18 +76,19 @@ def fix(url: str) -> str:
     if not host.endswith(AZURE_PG_SUFFIX):
         host = host + AZURE_PG_SUFFIX
 
+    # Preserve the original userinfo string (encoded form), not the urllib-decoded
+    # `parsed.username` / `parsed.password` — decoding loses any percent-escapes
+    # (`%40` in a password becomes `@`, which then re-breaks the URL).
     userinfo = ""
-    if parsed.username is not None:
-        userinfo = parsed.username
-        if parsed.password is not None:
-            userinfo += f":{parsed.password}"
-        userinfo += "@"
+    if "@" in (parsed.netloc or ""):
+        userinfo = parsed.netloc.rsplit("@", 1)[0] + "@"
 
     netloc = f"{userinfo}{host}:{AZURE_PG_PORT}"
 
     query = parse_qs(parsed.query)
     query["sslmode"] = ["require"]
-    query_str = urlencode({k: v[0] for k, v in query.items()})
+    # doseq=True preserves multi-valued query params instead of collapsing to v[0].
+    query_str = urlencode(query, doseq=True)
 
     return urlunparse(
         (parsed.scheme, netloc, parsed.path, parsed.params, query_str, parsed.fragment)

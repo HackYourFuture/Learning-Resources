@@ -4,13 +4,13 @@ Write the exact `az containerapp job create` command you would run for the
 weather-ingest job, then run a self-check against the Week 6 gotchas list:
 
   - Did you include --registry-server?
-  - Is the --container name set?
+  - Is the --container-name flag set?
   - Did you specify --replica-timeout?
   - Did you pass --env-vars (with secret references, not plain values)?
 
-The self-check imports your build_create_command() result and looks for the
-flags it expects. If anything is missing, it prints which flag is missing and
-exits non-zero so you can see the gap before spending Azure credits.
+The self-check calls your build_create_command() and looks for the flags it
+expects. If anything is missing, it prints which flag is missing and exits
+non-zero so you can see the gap before spending Azure credits.
 
 This is the "dry run" muscle: writing the command before running it, and
 reviewing it against a checklist. The most common Container Apps Job failures

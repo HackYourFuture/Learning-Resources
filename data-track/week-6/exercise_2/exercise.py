@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
 # Expected output once AZURE_STORAGE_CONNECTION_STRING is set and TODOs are done:
 #
-# Uploaded test/practice_2026-04-01.json (42 bytes)
+# Uploaded test/practice_2026-04-01.json (N bytes)
 # Next steps (run from the CLI):
 #   az storage blob list   --account-name <name> --container-name raw --prefix test/ --output table --auth-mode login
 #   az storage blob download --account-name <name> --container-name raw --name test/practice_2026-04-01.json --file /tmp/downloaded.json --auth-mode login

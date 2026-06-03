@@ -12,8 +12,9 @@ import json
 from pathlib import Path
 
 # A sample `az resource list --resource-group rg-weather-dev --output json` payload
-# ships next to this file. If you have Azure access, you can replace it with your own:
-#   az resource list --resource-group <your-group> --output json > my_resources.json
+# ships next to this file. If you have Azure access, you can replace it with your own
+# (write to the same filename the script reads):
+#   az resource list --resource-group <your-group> --output json > az_resource_list_output.json
 SAMPLE_PATH = Path(__file__).parent / "az_resource_list_output.json"
 
 
