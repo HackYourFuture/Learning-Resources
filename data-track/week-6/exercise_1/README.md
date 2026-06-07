@@ -1,30 +1,28 @@
 # Exercise 1: Trace a Resource Group
 
-Parse the output of `az resource list` and label every resource in the shared resource group: what it is and which chapter introduced it.
+Write a bash script that lists all Azure resources in the shared resource group `rg-hyf-data` formatted as a table.
 
 ## Setup
 
-No extra dependencies. `exercise.py` uses only the standard library and reads `az_resource_list_output.json` next to it.
-
-The JSON file is a representative mock of the shared `rg-weather-dev` resource group. If you have Azure access, replace it with your own:
+No extra python dependencies needed. This exercise runs `az cli` commands, so you should run `az login` first:
 
 ```bash
-az resource list --resource-group <your-group> --output json > az_resource_list_output.json
+az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
 ```
 
 ## Task
 
-1. Open `exercise.py` and fill in `TYPE_CATALOG` (TODO 1) so each `Microsoft.*` type maps to a short label and a Week 6 chapter number.
-2. Implement `classify_resources()` (TODO 2) so it returns one dict per resource with `name`, `type_label`, `chapter`. Skip unknown types as `("unknown", None)` instead of crashing.
-3. Run `python3 exercise.py` and confirm the table matches the `# Expected output:` block at the bottom of the file.
+1. Open `exercise.sh` and fill in the `az` command to list all resources inside the resource group `rg-hyf-data` in a table format.
+2. Run the script:
+   ```bash
+   bash exercise.sh
+   ```
+3. Verify that it prints a list of resources (storage accounts, postgres flexible server, etc.) currently provisioned in the resource group.
 
 ## Success criteria
 
-- The script prints a 7-row table without errors.
-- Every resource is correctly mapped to its short type name and chapter label.
+- Running `bash exercise.sh` successfully calls the Azure CLI and outputs a table listing the resource names, types, and locations.
 
 ## Stretch
 
-- Add an eighth resource type to the JSON (e.g. `Microsoft.Network/publicIPAddresses`) and confirm your code labels it as `unknown` without crashing.
-- Run `az resource list --resource-group <your-group> --output json` against your own shared group, save the file, and rerun the script to label your real environment.
-
+- Try query flags: use the `--query` flag to filter the output to show only the resource name and type. E.g., query for `"[].{Name:name, Type:type}"`.

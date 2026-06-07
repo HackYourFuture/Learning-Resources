@@ -19,11 +19,10 @@ Work through them in order. None depend on each other, but the difficulty climbs
 ```text
 week-6/
 ├── exercise_1/
-│   ├── az_resource_list_output.json  # mock `az resource list` output
-│   ├── exercise.py                   # starter with TODOs
+│   ├── exercise.sh                   # starter bash script
 │   ├── README.md
 │   └── solutions/
-│       └── exercise.py               # reference answer with # WHY notes
+│       └── exercise.sh               # solution bash script
 ├── exercise_2/
 │   ├── exercise.py                   # Azure-dependent; fails gracefully without env var
 │   ├── .env.example
@@ -37,10 +36,11 @@ week-6/
 │   └── solutions/
 │       └── exercise.py
 ├── exercise_4/
-│   ├── exercise.py
+│   ├── exercise.sh                   # starter bash script
+│   ├── check.py                      # dry-run validator script
 │   ├── README.md
 │   └── solutions/
-│       └── exercise.py
+│       └── exercise.sh               # solution bash script
 └── exercise_5/
     ├── exercise.py
     ├── README.md
