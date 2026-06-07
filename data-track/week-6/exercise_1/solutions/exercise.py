@@ -1,8 +1,7 @@
 """Exercise 1: Trace a resource group.
 
 You will parse the JSON output of `az resource list` and label every resource
-in the shared resource group: what it is, which chapter introduced it, and
-whether it bills you while it sits idle.
+in the shared resource group: what it is and which chapter introduced it.
 
 This is the muscle you need before you create your own resources in the
 assignment. Knowing what already exists prevents duplicates and wasted credits.
