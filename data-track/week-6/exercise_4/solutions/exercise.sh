@@ -1,38 +1,37 @@
 #!/usr/bin/env bash
-# Exercise 4: Dry-Run a Container App Job
+# Exercise 4: Create a Container App Job
 #
-# Write the exact `az containerapp job create` command you would run for the
-# weather-ingest job. Use backslash continuations to split the command across
-# multiple lines.
-#
-# Use these exact values in your command:
-#   Name: job-weather-ingest
-#   Resource Group: rg-weather-dev
-#   Environment: env-weather-dev
-#   Registry Server: acrweatherdev.azurecr.io
-#   Image: acrweatherdev.azurecr.io/weather-ingest:1.0
-#   Container Name: weather-ingest
-#   Replica Timeout: 600
-#   Trigger Type: Schedule
-#   Cron Expression: "0 * * * *"
-#   Env Vars: POSTGRES_URL=secretref:postgres-url AZURE_STORAGE_CONNECTION_STRING=secretref:storage-conn
+# Shared HYF values aligned with Chapter 5 (Azure Container Apps Jobs).
+
+set -euo pipefail
+
+JOB_NAME="job-practice-example"
+IMAGE_TAG="1.0"
+
+echo "=== Validating flags before create ==="
+bash validate_flags.sh solutions/exercise.sh
 
 az containerapp job create \
-  --name job-weather-ingest \
-  --resource-group rg-weather-dev \
-  --environment env-weather-dev \
-  --trigger-type Schedule \
-  --cron-expression "0 * * * *" \
-  --replica-timeout 600 \
-  --image acrweatherdev.azurecr.io/weather-ingest:1.0 \
-  --registry-server acrweatherdev.azurecr.io \
-  --container-name weather-ingest \
-  --env-vars POSTGRES_URL=secretref:postgres-url AZURE_STORAGE_CONNECTION_STRING=secretref:storage-conn
+  --name "${JOB_NAME}" \
+  --resource-group rg-hyf-data \
+  --environment env-hyf-data \
+  --trigger-type Manual \
+  --replica-timeout 300 \
+  --replica-retry-limit 0 \
+  --image "hyfregistry.azurecr.io/weather-pipeline:${IMAGE_TAG}" \
+  --registry-server hyfregistry.azurecr.io \
+  --container-name weather-pipeline \
+  --env-vars \
+    POSTGRES_URL="$(az keyvault secret show --vault-name kv-hyf-data --name postgres-url --query value -o tsv)" \
+    AZURE_STORAGE_CONNECTION_STRING="$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)" \
+    LOG_LEVEL=INFO
+# WHY inline Key Vault retrieval: matches the chapter pattern students already practised
+# in exercises 2 and 3. Production setups use secret references; Week 6 keeps it explicit.
 
-# Prove that the container app job has been created
-az containerapp job list --resource-group rg-weather-dev -o table
+echo ""
+echo "=== Jobs in rg-hyf-data ==="
+az containerapp job list --resource-group rg-hyf-data -o table
 
-# Provide the Azure Portal link to the created job
 SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-echo "Azure Portal URL: https://portal.azure.com/#resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/rg-weather-dev/providers/Microsoft.App/jobs/job-weather-ingest"
-
+echo ""
+echo "Azure Portal URL: https://portal.azure.com/#resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/rg-hyf-data/providers/Microsoft.App/jobs/${JOB_NAME}"

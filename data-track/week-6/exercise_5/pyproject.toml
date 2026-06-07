@@ -1,7 +1,0 @@
-[project]
-name = "exercise_5"
-version = "0.1.0"
-dependencies = [
-    "azure-identity>=1.15.0",
-    "azure-mgmt-costmanagement>=4.0.0",
-]

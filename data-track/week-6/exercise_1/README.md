@@ -1,10 +1,10 @@
 # Exercise 1: Trace a Resource Group
 
-Write a bash script that lists all Azure resources in the shared resource group `rg-hyf-data` formatted as a table.
+List the shared Azure resources and classify them by type, chapter, and idle billing behaviour.
 
 ## Setup
 
-No extra python dependencies needed. This exercise runs `az cli` commands, so you should run `az login` first:
+This exercise runs `az` commands. Log in first:
 
 ```bash
 az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
@@ -12,17 +12,17 @@ az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
 
 ## Task
 
-1. Open `exercise.sh` and fill in the `az` command to list all resources inside the resource group `rg-hyf-data` in a table format.
-2. Run the script:
-   ```bash
-   bash exercise.sh
-   ```
-3. Verify that it prints a list of resources (storage accounts, postgres flexible server, etc.) currently provisioned in the resource group.
+1. Open `exercise.sh` and fill in the `az` command to list all resources in `rg-hyf-data` as a table.
+2. Run `bash exercise.sh` and read the output.
+3. Open `resource_table.md` and fill one row per core resource: **Resource Name**, **Type**, **Chapter**, **Bills When Idle**.
+4. Compare your table with `solutions/resource_table.md` after attempting.
 
 ## Success criteria
 
-- Running `bash exercise.sh` successfully calls the Azure CLI and outputs a table listing the resource names, types, and locations.
+- `bash exercise.sh` prints a table of resources in `rg-hyf-data`.
+- `resource_table.md` has at least five classified rows with a chapter reference for each.
 
 ## Stretch
 
-- Try query flags: use the `--query` flag to filter the output to show only the resource name and type. E.g., query for `"[].{Name:name, Type:type}"`.
+- Add the `--query` filter from the solution to show only name and type.
+- Pick one resource and run `az resource show` to inspect its full metadata.

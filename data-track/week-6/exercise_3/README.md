@@ -1,34 +1,40 @@
-# Exercise 3: Connect to Postgres, Create Table, Insert and Query
+# Exercise 3: Connect to Postgres, Create Table, Ingest CSV and Query
 
-Connect to your live Azure Database for PostgreSQL, create a practice table, insert rows, and query them using Python and the `psycopg2` driver.
+Connect to the shared Azure Database for PostgreSQL, create a practice table in your own schema, ingest rows from a local CSV file, and query them using Python and `psycopg2`.
 
 ## Setup
-
-This exercise requires the `psycopg2-binary` library and a valid `POSTGRES_URL` environment variable.
 
 1. Install dependencies:
    ```bash
    uv sync
    ```
-2. Set your `POSTGRES_URL` environment variable:
+2. Retrieve the connection string from Key Vault (same flow as Chapter 5):
    ```bash
-   export POSTGRES_URL="postgresql://pipeline_user:<PASSWORD>@hyf-data-pg.postgres.database.azure.com:5432/team1?sslmode=require"
+   export POSTGRES_URL="$(az keyvault secret show --vault-name kv-hyf-data --name postgres-url --query value -o tsv)"
    ```
 
 ## Task
 
-1. Open `exercise.py`.
-2. Implement `run_postgres_ops(url)`. You should:
-   * Connect to Postgres and wrap the connection with `contextlib.closing`.
-   * Create a table called `practice_readings`.
-   * Insert two rows of mock weather data.
-   * Query the table using `SELECT` and print the results to stdout.
-   * Call `conn.commit()` to persist your changes.
+1. Open `exercise.py` and implement `run_postgres_ops(url, csv_path)`.
+2. Complete the TODOs in order:
+   * **TODO 1:** Connect with `psycopg2.connect(url)` inside `contextlib.closing()`.
+   * **TODO 2:** Create a student-specific schema (e.g. `dev_lasse`) and `SET search_path` to it — required on the shared `team1` database so you do not clash with classmates.
+   * **TODO 3:** `CREATE TABLE IF NOT EXISTS practice_readings` with the columns specified in the file.
+   * **TODO 4:** Read `weather_data.csv` with `csv.DictReader` and insert each row with a parameterised `INSERT`.
+   * **TODO 5:** `SELECT` and print the inserted rows.
+   * **TODO 6:** `conn.commit()`.
 3. Run the script:
    ```bash
-   python3 exercise.py
+   uv run python exercise.py
    ```
 
 ## Success criteria
 
-- Running `python3 exercise.py` connects to the database, creates the table (if missing), inserts the rows, and outputs the queried rows successfully.
+- Without `POSTGRES_URL`, the script exits with a clear error message.
+- With Key Vault credentials set, the script creates your schema, ingests the three CSV rows, and prints query results.
+- Re-running the script appends duplicate rows (expected) — your personal schema keeps your data separate from other students.
+
+## Stretch
+
+- Add `ON CONFLICT DO NOTHING` on `(station, timestamp)` so reruns are idempotent.
+- Change the schema name to `dev_<your_name>` and verify in psql that your table lives there, not in `public`.

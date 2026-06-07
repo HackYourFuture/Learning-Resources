@@ -1,46 +1,36 @@
-# Exercise 5: Query Live Azure Costs
+# Exercise 5: Cost Analysis in the Azure Portal
 
-Connect to the Azure Cost Management API to query the actual, real-time costs incurred by the shared resource group `rg-hyf-data`.
+View real costs for the shared resource group `rg-hyf-data` in the Azure Portal and document what you find. This matches the hands-on section in Chapter 6 (Cost Awareness) — no Python SDK required.
 
 ## Setup
 
-This exercise requires installing dependencies, logging in to Azure CLI, and setting your active subscription ID as an environment variable.
+```bash
+az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
+```
 
-1. Install dependencies:
-   ```bash
-   uv sync
-   ```
-2. Login using your HackYourFuture Azure account:
-   ```bash
-   az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
-   ```
-3. Set your `AZURE_SUBSCRIPTION_ID` environment variable:
-   ```bash
-   export AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-   ```
+Your group has **Cost Management Reader** on `rg-hyf-data`, so you can open Cost Analysis but cannot edit budgets.
 
 ## Task
 
-1. Open `exercise.py`.
-2. Implement `get_actual_costs(subscription_id, resource_group)`. You should:
-   * Initialize a `DefaultAzureCredential` instance.
-   * Initialize the `CostManagementClient` passing the credential.
-   * Execute the query by calling `client.query.usage()` passing the scope and the pre-configured `payload` dictionary as the `parameters` keyword argument.
-   * Return the rows from the query result (`res.rows`).
-
-   > 💡 **Tip:** While we use the Python SDK for simplicity (to handle token authentication and requests), the parameters payload structure is identical to the Azure REST API payload. You can refer to the REST API documentation for details.
-
-3. Run the script:
-   ```bash
-   python3 exercise.py
-   ```
+1. Run `bash exercise.sh` — it verifies your CLI session and prints the portal link.
+2. In the portal, open **Cost Management → Cost Analysis** for `rg-hyf-data`.
+3. Set timeframe to **Month to date**. Try grouping by **Service name** or **Resource**.
+4. Fill in every section of `cost_findings.md` from what you see.
+5. Compare with `solutions/cost_findings.md` after attempting.
 
 ## Success criteria
 
-- Running `python3 exercise.py` queries the live Cost Management API successfully and prints the daily pre-tax costs for `rg-hyf-data` along with a summed Month-to-Date total.
+- `cost_findings.md` has a month-to-date total, three cost drivers, and the idle-billing table filled in.
+- Your idle-billing answers match the Chapter 6 table (Postgres and ACR = yes; jobs and environment = no).
+- You can explain in one sentence which resource drives most of the spend.
+
+## Pre-flight widget
+
+The widget trains the *arithmetic* behind stop-vs-run savings — useful context before reading live portal numbers.
+
+> 🚀 [Monthly cost in EUR exercise](https://lasse.be/simple-hyf-teach-widget/?exercise=w6_cost_awareness__monthly_cost_eur&lang=python)
 
 ## Documentation
 
-- [Azure Cost Management Query REST API Reference](https://learn.microsoft.com/rest/api/costmanagement/query/usage): Official documentation detailing query scopes, payloads, and parameter definitions.
-- [Azure SDK for Python - Cost Management](https://learn.microsoft.com/python/api/overview/azure/mgmt-costmanagement-readme): Package documentation for Azure Cost Management Client.
-
+- [Azure cost management documentation](https://learn.microsoft.com/azure/cost-management-billing/)
+- [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/)
