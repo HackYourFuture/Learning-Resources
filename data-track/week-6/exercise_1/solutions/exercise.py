@@ -47,29 +47,8 @@ TYPE_CATALOG: dict[str, tuple[str, int]] = {
 # one line and degrades gracefully for unknown types via the default.
 
 
-# TODO 2: Decide which resource types bill you while idle (no requests, no jobs running).
-#         The honest answer is *most* managed Azure resources do, because the underlying
-#         compute, storage, or networking stays reserved for you. The clearest exceptions
-#         in this exercise:
-#           - Container App Job (Microsoft.App/jobs) bills per execution, not per hour.
-#           - Log Analytics workspace bills per GB ingested, not per hour.
-#         Return True for "bills while idle", False otherwise.
-_USAGE_BILLED_TYPES = {
-    "Microsoft.App/jobs",
-    "Microsoft.OperationalInsights/workspaces",
-}
-
-
-def bills_when_idle(resource_type: str) -> bool:
-    return resource_type not in _USAGE_BILLED_TYPES
-# WHY default to True: framing the rule as "bills idle UNLESS the type is on the
-# usage-billed allowlist" is safer than the reverse. Forgetting to list a new
-# resource type then errs on the side of "assume it costs money", which matches
-# how a student should think about an unfamiliar Azure resource in a shared RG.
-
-
-# TODO 3: For each resource in the list, produce a dict with these keys:
-#           name, type_label, chapter, bills_idle
+# TODO 2: For each resource in the list, produce a dict with these keys:
+#           name, type_label, chapter
 #         Skip resources whose type is not in TYPE_CATALOG (return them as "unknown" with
 #         chapter=None instead of crashing). The chapter-readiness check matters because
 #         a real shared RG will accumulate extra resources over time.
@@ -83,7 +62,6 @@ def classify_resources(resources: list[dict]) -> list[dict]:
                 "name": r["name"],
                 "type_label": label,
                 "chapter": chapter,
-                "bills_idle": bills_when_idle(rtype),
             }
         )
     return classified
@@ -95,10 +73,10 @@ def classify_resources(resources: list[dict]) -> list[dict]:
 
 def format_table(rows: list[dict]) -> str:
     """Pretty-print the classification as a fixed-width table."""
-    header = f"{'Name':<24} {'Type':<22} {'Chapter':<8} {'Bills idle?':<11}"
+    header = f"{'Name':<24} {'Type':<22} {'Chapter':<8}"
     sep = "-" * len(header)
     body = "\n".join(
-        f"{r['name']:<24} {r['type_label']:<22} {str(r['chapter'] or '-'):<8} {('yes' if r['bills_idle'] else 'no'):<11}"
+        f"{r['name']:<24} {r['type_label']:<22} {str(r['chapter'] or '-'):<8}"
         for r in rows
     )
     return f"{header}\n{sep}\n{body}"
@@ -108,19 +86,17 @@ if __name__ == "__main__":
     resources = load_resources(SAMPLE_PATH)
     rows = classify_resources(resources)
     print(format_table(rows))
-    idle_billers = sum(1 for r in rows if r["bills_idle"])
-    print(f"\n{idle_billers} of {len(rows)} resources bill while idle.")
 
 # Expected output (after you fill in the TODOs):
 #
-# Name                     Type                   Chapter  Bills idle?
-# --------------------------------------------------------------------
-# stweatherdev01           Storage account        3        yes
-# pg-weather-dev           Postgres server        4        yes
-# env-weather-dev          Container Apps env     5        yes
-# job-weather-ingest       Container App Job      5        no
-# acrweatherdev            Container Registry     5        yes
-# kv-weather-dev           Key Vault              6        yes
-# log-weather-dev          Log Analytics          6        no
+# Name                     Type                   Chapter 
+# --------------------------------------------------------
+# stweatherdev01           Storage account        3       
+# pg-weather-dev           Postgres server        4       
+# env-weather-dev          Container Apps env     5       
+# job-weather-ingest       Container App Job      5       
+# acrweatherdev            Container Registry     5       
+# kv-weather-dev           Key Vault              6       
+# log-weather-dev          Log Analytics          6       
 #
-# 5 of 7 resources bill while idle.
+

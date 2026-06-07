@@ -10,7 +10,7 @@ Work through them in order. None depend on each other, but the difficulty climbs
 
 | Folder | Topic | Concepts |
 |---|---|---|
-| [`exercise_1/`](exercise_1/) | Trace a Resource Group | Azure CLI output, resource hierarchy, idle billing |
+| [`exercise_1/`](exercise_1/) | Trace a Resource Group | Azure CLI output, resource hierarchy |
 | [`exercise_2/`](exercise_2/) | End-to-End Blob Verification | `azure-storage-blob`, upload-from-code, verify-from-CLI |
 | [`exercise_3/`](exercise_3/) | Debug a Broken Connection String | URL parsing, Azure FQDN, SSL, port |
 | [`exercise_4/`](exercise_4/) | Dry-Run a Container App Job | `az containerapp job create`, flag self-check |
