@@ -1,16 +1,13 @@
 """Exercise 5: Query Live Azure Costs.
 
-This exercise connects to the Azure Cost Management API to query the actual,
-real-time costs incurred by the shared resource group `rg-hyf-data`.
-
-It uses the standard `azure-identity` package to obtain an Azure access token
-under your login credentials, and calls the ARM REST API.
+This exercise connects to the Azure Cost Management API using the official Azure SDK
+to query the actual, real-time costs incurred by the shared resource group `rg-hyf-data`.
 """
 
 import os
 import sys
-import requests
 from azure.identity import DefaultAzureCredential
+from azure.mgmt.costmanagement import CostManagementClient
 
 # Get subscription ID from env
 SUBSCRIPTION_ID = os.environ.get("AZURE_SUBSCRIPTION_ID")
@@ -23,22 +20,19 @@ if not SUBSCRIPTION_ID:
     sys.exit(1)
 
 
-def get_actual_costs(subscription_id: str, resource_group: str) -> list[tuple[float, int, str, str]]:
-    """Query the Azure Cost Management REST API for daily pretax costs.
+def get_actual_costs(subscription_id: str, resource_group: str) -> list[list]:
+    """Query the Azure Cost Management SDK for daily pretax costs.
 
-    Returns a list of tuples: (cost, date_val, resource_group_name, currency).
+    Returns the rows of results from the query execution.
     """
     # TODO 1: Initialize the DefaultAzureCredential.
-    #         (Recall how you did this in Chapter 3/Exercise 2 for Blob Storage).
     cred = None
 
-    # TODO 2: Obtain an access token for the management plane by calling:
-    #         cred.get_token("https://management.azure.com/.default")
-    token = None
+    # TODO 2: Initialize the CostManagementClient passing the credential.
+    client = None
 
-    # The Azure Resource Manager (ARM) REST URL and payload are configured for you.
-    # The Cost Management API is highly specific, so the structure is pre-filled here:
-    url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CostManagement/query?api-version=2021-10-01"
+    # The scope and payload query dictionary are pre-configured for you.
+    scope = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}"
 
     payload = {
         "type": "ActualCost",
@@ -60,23 +54,12 @@ def get_actual_costs(subscription_id: str, resource_group: str) -> list[tuple[fl
         }
     }
 
-    # TODO 3: Construct the headers dictionary. You must pass:
-    #           - "Authorization": "Bearer <your_token_string>" (from token.token)
-    #           - "Content-Type": "application/json"
-    headers = {}
-
-    # TODO 4: Make a POST request to `url` using `requests.post()` passing headers and payload.
-    #         Verify the response status is 200, otherwise raise an error or print res.text.
+    # TODO 3: Execute the query by calling `client.query.usage()` passing `scope` and `payload`
+    #         as the `parameters` keyword argument.
+    #         e.g., res = client.query.usage(scope=..., parameters=...)
     res = None
 
-    # TODO 5: Parse the daily rows from the response JSON and map them to the return format.
-    #         The JSON response carries the data under:
-    #           data = res.json()
-    #           rows = data["properties"]["rows"]
-    #
-    #         Each row in the response is a list matching the columns:
-    #           [PreTaxCost, UsageDate, ResourceGroupName, Currency]
-    #         Iterate over them, cast costs to float and dates to int, and return the tuples.
+    # TODO 4: Return the rows from the result (`res.rows`).
     #
     # Note: Raise NotImplementedError when starting.
     raise NotImplementedError
@@ -91,6 +74,7 @@ if __name__ == "__main__":
         print("-" * 50)
         total = 0.0
         currency = "EUR"
+        # Rows contain: [PreTaxCost, UsageDate, ResourceGroupName, Currency]
         for cost, date_val, rg, curr in rows:
             total += cost
             currency = curr

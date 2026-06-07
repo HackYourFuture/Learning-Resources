@@ -1,16 +1,13 @@
 """Exercise 5: Query Live Azure Costs.
 
-This exercise connects to the Azure Cost Management API to query the actual,
-real-time costs incurred by the shared resource group `rg-hyf-data`.
-
-It uses the standard `azure-identity` package to obtain an Azure access token
-under your login credentials, and calls the ARM REST API.
+This exercise connects to the Azure Cost Management API using the official Azure SDK
+to query the actual, real-time costs incurred by the shared resource group `rg-hyf-data`.
 """
 
 import os
 import sys
-import requests
 from azure.identity import DefaultAzureCredential
+from azure.mgmt.costmanagement import CostManagementClient
 
 # Get subscription ID from env
 SUBSCRIPTION_ID = os.environ.get("AZURE_SUBSCRIPTION_ID")
@@ -23,22 +20,20 @@ if not SUBSCRIPTION_ID:
     sys.exit(1)
 
 
-def get_actual_costs(subscription_id: str, resource_group: str) -> list[tuple[float, int, str, str]]:
-    """Query the Azure Cost Management REST API for daily pretax costs.
+def get_actual_costs(subscription_id: str, resource_group: str) -> list[list]:
+    """Query the Azure Cost Management SDK for daily pretax costs.
 
-    Returns a list of tuples: (cost, date_val, resource_group_name, currency).
+    Returns the rows of results from the query execution.
     """
     # TODO 1: Initialize the DefaultAzureCredential.
     cred = DefaultAzureCredential()
 
-    # TODO 2: Obtain an access token for the management plane: "https://management.azure.com/.default"
-    token = cred.get_token("https://management.azure.com/.default")
+    # TODO 2: Initialize the CostManagementClient passing the credential.
+    client = CostManagementClient(credential=cred)
 
-    # TODO 3: Construct the POST request to the Cost Management query endpoint:
-    #         https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CostManagement/query?api-version=2021-10-01
-    url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CostManagement/query?api-version=2021-10-01"
+    # The scope and payload query dictionary are pre-configured for you.
+    scope = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}"
 
-    # TODO 4: Send the query payload.
     payload = {
         "type": "ActualCost",
         "timeframe": "MonthToDate",
@@ -59,42 +54,16 @@ def get_actual_costs(subscription_id: str, resource_group: str) -> list[tuple[fl
         }
     }
 
-    headers = {
-        "Authorization": f"Bearer {token.token}",
-        "Content-Type": "application/json"
-    }
+    # TODO 3: Execute the query by calling `client.query.usage()` passing `scope` and `payload`
+    #         as the `parameters` keyword argument.
+    res = client.query.usage(scope=scope, parameters=payload)
 
-    res = requests.post(url, headers=headers, json=payload)
-
-    # TODO 5: Parse the status and response JSON. If 200, return the rows from the response properties.
-    if res.status_code != 200:
-        raise RuntimeError(f"Cost Management query failed with status {res.status_code}: {res.text}")
-
-    data = res.json()
-    properties = data.get("properties", {})
-    rows = properties.get("rows", [])
-
-    # Map column headers dynamically to avoid ordering assumptions
-    columns = [col["name"] for col in properties.get("columns", [])]
-    cost_idx = columns.index("PreTaxCost")
-    date_idx = columns.index("UsageDate")
-    rg_idx = columns.index("ResourceGroupName")
-    curr_idx = columns.index("Currency")
-
-    results = []
-    for r in rows:
-        results.append((
-            float(r[cost_idx]),
-            int(r[date_idx]),
-            r[rg_idx],
-            r[curr_idx]
-        ))
-    return results
-# WHY REST API request instead of SDK: The `azure-mgmt-costmanagement` python SDK
-# exists, but it requires introducing another large package. Querying the Cost
-# Management REST API endpoint directly using standard `requests` and the token
-# from `DefaultAzureCredential` allows querying costs in fewer lines of code
-# and is less fragile across SDK version bumps.
+    # TODO 4: Return the rows from the result (`res.rows`).
+    return res.rows
+# WHY CostManagementClient over raw REST API requests: The SDK manages OAuth token
+# retrieval, handles request headers, constructs endpoints, and parses HTTP statuses
+# internally. By passing the raw dictionary configuration payload to parameters, we
+# can query the cost API cleanly without verbose model instantiation code.
 
 
 if __name__ == "__main__":
@@ -106,6 +75,7 @@ if __name__ == "__main__":
         print("-" * 50)
         total = 0.0
         currency = "EUR"
+        # Rows contain: [PreTaxCost, UsageDate, ResourceGroupName, Currency]
         for cost, date_val, rg, curr in rows:
             total += cost
             currency = curr
@@ -114,6 +84,8 @@ if __name__ == "__main__":
             print(f"{date_str:<10} {rg:<20} {cost:.4f} {curr}")
         print("-" * 50)
         print(f"Total Month-to-Date: {total:.4f} {currency}")
+    except NotImplementedError:
+        print("\nTODO: Implement get_actual_costs() in exercise.py")
     except Exception as e:
         print(f"Error querying cost API: {e}")
         sys.exit(1)
