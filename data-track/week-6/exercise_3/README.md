@@ -1,37 +1,34 @@
-# Exercise 3: Debug a Broken Connection String
+# Exercise 3: Connect to Postgres, Create Table, Insert and Query
 
-Take a Postgres connection string with three problems, identify each one, and produce a fixed version. Pure Python: no network call needed.
+Connect to your live Azure Database for PostgreSQL, create a practice table, insert rows, and query them using Python and the `psycopg2` driver.
 
 ## Setup
 
-No extra dependencies. The starter uses only `urllib.parse` from the standard library.
+This exercise requires the `psycopg2-binary` library and a valid `POSTGRES_URL` environment variable.
+
+1. Ensure the postgres driver is installed:
+   ```bash
+   pip install psycopg2-binary
+   ```
+2. Set your `POSTGRES_URL` environment variable:
+   ```bash
+   export POSTGRES_URL="postgresql://pipeline_user:<PASSWORD>@hyf-data-pg.postgres.database.azure.com:5432/team1?sslmode=require"
+   ```
 
 ## Task
 
-The broken string is hard-coded at the top of `exercise.py`:
-
-```text
-postgresql://admin:password@hyf-data-pg/weather_db
-```
-
-1. Run `python3 exercise.py` and read the `NotImplementedError` traceback.
-2. Implement `diagnose(url)` (TODO 1 + TODO 2). It returns a list of short sentences naming each problem. There are three.
-3. Implement `fix(url)` (TODO 3). It returns the same URL with all three problems fixed.
-4. Run the script. Confirm the output matches the `# Expected output:` block at the bottom of the file.
-
-The three problems, in case you get stuck:
-
-- Host is missing the Azure FQDN suffix (`.postgres.database.azure.com`).
-- No port. Azure Postgres listens on `5432`, and some client libraries refuse to default.
-- `sslmode=require` is missing. Azure Postgres rejects unencrypted connections.
+1. Open `exercise.py`.
+2. Implement `run_postgres_ops(url)`. You should:
+   * Connect to Postgres and wrap the connection with `contextlib.closing`.
+   * Create a table called `practice_readings`.
+   * Insert two rows of mock weather data.
+   * Query the table using `SELECT` and print the results to stdout.
+   * Call `conn.commit()` to persist your changes.
+3. Run the script:
+   ```bash
+   python3 exercise.py
+   ```
 
 ## Success criteria
 
-- `diagnose(BROKEN_URL)` returns exactly three problems, in order: host, port, SSL.
-- `fix(BROKEN_URL)` returns `postgresql://admin:password@hyf-data-pg.postgres.database.azure.com:5432/weather_db?sslmode=require`.
-- The script runs without raising and prints the expected output.
-
-## Stretch
-
-- Pair with the widget version of this exercise, [Parse Postgres URL](https://lasse.be/simple-hyf-teach-widget/?exercise=w6_azure_postgresql__parse_postgres_url&lang=python), to see the same problem from a different angle.
-- Extend `diagnose()` to also flag a default `admin` username (Azure recommends per-environment usernames), and a password that looks like a placeholder.
+- Running `python3 exercise.py` connects to the database, creates the table (if missing), inserts the rows, and outputs the queried rows successfully.
