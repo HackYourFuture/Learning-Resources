@@ -6,9 +6,9 @@ Connect to your live Azure Database for PostgreSQL, create a practice table, ins
 
 This exercise requires the `psycopg2-binary` library and a valid `POSTGRES_URL` environment variable.
 
-1. Ensure the postgres driver is installed:
+1. Install dependencies:
    ```bash
-   pip install psycopg2-binary
+   uv sync
    ```
 2. Set your `POSTGRES_URL` environment variable:
    ```bash

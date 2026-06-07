@@ -4,9 +4,13 @@ Connect to the Azure Cost Management API to query the actual, real-time costs in
 
 ## Setup
 
-This exercise requires logging in to Azure CLI and setting your active subscription ID as an environment variable.
+This exercise requires installing dependencies, logging in to Azure CLI, and setting your active subscription ID as an environment variable.
 
-1. Login using your HackYourFuture Azure account:
+1. Install dependencies:
+   ```bash
+   uv sync
+   ```
+2. Login using your HackYourFuture Azure account:
    ```bash
    az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
    ```

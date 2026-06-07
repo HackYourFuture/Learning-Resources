@@ -7,7 +7,7 @@ Upload a JSON file from Python, then verify it from the CLI. This is the loop yo
 This exercise needs the **shared Azure Storage account**. Retrieve the connection string from Key Vault using the CLI commands from Chapter 5.
 
 ```bash
-pip install -r requirements.txt
+uv sync
 export AZURE_STORAGE_CONNECTION_STRING="$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)"
 ```
 
