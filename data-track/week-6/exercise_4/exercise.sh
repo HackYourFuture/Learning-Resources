@@ -6,29 +6,34 @@
 #
 # Replace placeholders before running against live Azure:
 #   JOB_NAME       → job-practice-<your_name>  (unique per student)
+#   YOUR_HANDLE    → lowercase GitHub username (Week 5 ACR repo prefix)
 #   IMAGE_TAG      → your ACR tag from Week 5 (e.g. 1.0 or a commit SHA)
 #
 # Shared values (from Chapter 5):
 #   Resource Group:  rg-hyf-data
 #   Environment:     env-hyf-data
 #   Registry Server: hyfregistry.azurecr.io
-#   Image:           hyfregistry.azurecr.io/weather-pipeline:<IMAGE_TAG>
-#   Container Name:  weather-pipeline
+#   Image (yours):   hyfregistry.azurecr.io/<your-handle>-weather-pipeline:<IMAGE_TAG>
+#   Fallback image:  hyfregistry.azurecr.io/weather-pipeline:assignment
 #   Trigger Type:    Manual
 #   Replica Timeout: 300
 #
 # Tip: look up your tag with:
-#   az acr repository show-tags --name hyfregistry --repository weather-pipeline -o table
+#   az acr repository show-tags --name hyfregistry --repository <your-handle>-weather-pipeline -o table
 
 set -euo pipefail
 
 JOB_NAME="job-practice-<your_name>"
+YOUR_HANDLE="<your-handle>"
 IMAGE_TAG="<your_acr_tag>"
 
 # TODO 1: Write the full `az containerapp job create` command below.
 # Include --registry-server, --replica-timeout, and --env-vars with Key Vault values:
 #   POSTGRES_URL="$(az keyvault secret show --vault-name kv-hyf-data --name postgres-url --query value -o tsv)"
 #   AZURE_STORAGE_CONNECTION_STRING="$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)"
+#   LOG_LEVEL=INFO
+# Image: use hyfregistry.azurecr.io/${YOUR_HANDLE}-weather-pipeline:${IMAGE_TAG}
+# Fallback (if your image fails): hyfregistry.azurecr.io/weather-pipeline:assignment
 
 # TODO 2: Run the gotchas check before creating:
 #   bash validate_flags.sh exercise.sh

@@ -6,7 +6,12 @@
 set -euo pipefail
 
 JOB_NAME="job-practice-example"
+YOUR_HANDLE="example"
 IMAGE_TAG="1.0"
+# Primary image (student's Week 5 push):
+IMAGE="hyfregistry.azurecr.io/${YOUR_HANDLE}-weather-pipeline:${IMAGE_TAG}"
+# Fallback if the student's image is missing or fails to pull:
+# IMAGE="hyfregistry.azurecr.io/weather-pipeline:assignment"
 
 echo "=== Validating flags before create ==="
 bash validate_flags.sh solutions/exercise.sh
@@ -18,15 +23,15 @@ az containerapp job create \
   --trigger-type Manual \
   --replica-timeout 300 \
   --replica-retry-limit 0 \
-  --image "hyfregistry.azurecr.io/weather-pipeline:${IMAGE_TAG}" \
+  --image "${IMAGE}" \
   --registry-server hyfregistry.azurecr.io \
-  --container-name weather-pipeline \
   --env-vars \
     POSTGRES_URL="$(az keyvault secret show --vault-name kv-hyf-data --name postgres-url --query value -o tsv)" \
     AZURE_STORAGE_CONNECTION_STRING="$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)" \
     LOG_LEVEL=INFO
 # WHY inline Key Vault retrieval: matches the chapter pattern students already practised
 # in exercises 2 and 3. Production setups use secret references; Week 6 keeps it explicit.
+# WHY job name = container name for logs: default --container matches the job name.
 
 echo ""
 echo "=== Jobs in rg-hyf-data ==="

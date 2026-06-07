@@ -8,18 +8,20 @@ Write the `az containerapp job create` command for the **shared** HYF environmen
 az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
 ```
 
-Confirm your ACR image tag from Week 5:
+Confirm **your** ACR image tag from Week 5 (lowercase GitHub handle):
 
 ```bash
 az acr repository show-tags \
   --name hyfregistry \
-  --repository weather-pipeline \
+  --repository <your-handle>-weather-pipeline \
   --output table
 ```
 
+> **Fallback:** If your image is missing or fails to pull, use the teacher-maintained reference image `hyfregistry.azurecr.io/weather-pipeline:assignment` to practice the CLI workflow. Verify with `az acr repository show-tags --name hyfregistry --repository weather-pipeline -o table`.
+
 ## Task
 
-1. Open `exercise.sh`. Replace `<your_name>` and `<your_acr_tag>` with your values.
+1. Open `exercise.sh`. Replace `<your_name>`, `<your-handle>`, and `<your_acr_tag>` with your values.
 2. Fill in the full `az containerapp job create` command using the shared values from Chapter 5 (`rg-hyf-data`, `env-hyf-data`, `hyfregistry.azurecr.io`).
 3. Run the gotchas check **before** creating the job:
    ```bash
@@ -29,7 +31,7 @@ az acr repository show-tags \
 5. Optional: start the job and read logs:
    ```bash
    az containerapp job start --name job-practice-<your_name> --resource-group rg-hyf-data
-   az containerapp job logs show --name job-practice-<your_name> --resource-group rg-hyf-data --container weather-pipeline
+   az containerapp job logs show --name job-practice-<your_name> --resource-group rg-hyf-data --container job-practice-<your_name>
    ```
 
 ## Success criteria
