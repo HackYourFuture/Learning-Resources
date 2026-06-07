@@ -3,4 +3,5 @@ name = "exercise_3"
 version = "0.1.0"
 dependencies = [
     "psycopg2-binary>=2.9.0",
+    "azure-storage-blob>=12.19.0",
 ]

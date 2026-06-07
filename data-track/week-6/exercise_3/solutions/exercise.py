@@ -1,19 +1,19 @@
-"""Exercise 3: Connect to Postgres, Create Table, Ingest CSV and Query.
-
-This exercise verifies that you can connect to your Azure Database for PostgreSQL,
-create a table, read rows from a local CSV file, insert them using psycopg2,
-and query the table to confirm the ingestion succeeded.
-"""
+"""Exercise 3: Upload CSV to Blob Storage, ingest into Postgres, verify both."""
 
 import os
 import sys
 import csv
 from pathlib import Path
 from contextlib import closing
+
 import psycopg2
+from azure.storage.blob import BlobServiceClient
 
 POSTGRES_URL = os.environ.get("POSTGRES_URL")
-CSV_PATH = Path(__file__).parent.parent / "weather_data.csv"
+STORAGE_CONNECTION_STRING = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+CSV_PATH = Path(__file__).parent / "weather_data.csv"
+CONTAINER_NAME = "raw"
+BLOB_PREFIX = "practice/example/"
 
 CREATE_PRACTICE_READINGS_SQL = """
 CREATE TABLE IF NOT EXISTS practice_readings (
@@ -24,37 +24,33 @@ CREATE TABLE IF NOT EXISTS practice_readings (
 )
 """
 
-if not POSTGRES_URL:
-    print("Error: POSTGRES_URL environment variable is not set.")
-    print("Please set it in your terminal, e.g.:")
-    print("  export POSTGRES_URL=\"postgresql://pipeline_user:<PASSWORD>@hyf-data-pg.postgres.database.azure.com:5432/team1?sslmode=require\"")
-    sys.exit(1)
+
+def require_env() -> tuple[str, str]:
+    missing = []
+    if not POSTGRES_URL:
+        missing.append("POSTGRES_URL")
+    if not STORAGE_CONNECTION_STRING:
+        missing.append("AZURE_STORAGE_CONNECTION_STRING")
+    if missing:
+        print(f"Error: missing environment variable(s): {', '.join(missing)}", file=sys.stderr)
+        sys.exit(1)
+    return POSTGRES_URL, STORAGE_CONNECTION_STRING
+
+
+def upload_csv_to_blob(connection_string: str, csv_path: Path, blob_name: str) -> None:
+    service = BlobServiceClient.from_connection_string(connection_string)
+    container = service.get_container_client(CONTAINER_NAME)
+    data = csv_path.read_bytes()
+    container.upload_blob(name=blob_name, data=data, overwrite=True)
 
 
 def run_postgres_ops(url: str, csv_path: Path) -> None:
-    # TODO 1: Connect to the PostgreSQL database using psycopg2.connect(url).
-    #         Wrap the connection in contextlib.closing() to ensure it closes cleanly.
-    #         Create a cursor from the connection.
-    #
-    # TODO 2: Create and set search path to a student-specific schema (e.g. dev_lasse)
-    #         to prevent clashing with other students sharing the team1 database:
-    #           "CREATE SCHEMA IF NOT EXISTS dev_<name>;"
-    #           "SET search_path TO dev_<name>;"
-    #         Then execute CREATE_PRACTICE_READINGS_SQL with cur.execute().
     with closing(psycopg2.connect(url)) as conn:
         with conn.cursor() as cur:
             cur.execute("CREATE SCHEMA IF NOT EXISTS dev_practice;")
             cur.execute("SET search_path TO dev_practice;")
-            # WHY use a dedicated schema: prevents different students or processes
-            # from overwriting each other's tables in the public schema of a shared database.
-
             cur.execute(CREATE_PRACTICE_READINGS_SQL)
-            # WHY scaffold the DDL: Week 6 focuses on connect → schema → ingest → query.
-            # You will write CREATE TABLE yourself in the assignment pipeline.
 
-            # TODO 3: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
-            #         parsing temperature_c as a float, and insert each row into the
-            #         'practice_readings' table. Use parameterised query (with %s placeholders).
             with open(csv_path, mode="r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
@@ -65,22 +61,26 @@ def run_postgres_ops(url: str, csv_path: Path) -> None:
                         """,
                         (row["station"], row["timestamp"], float(row["temperature_c"])),
                     )
-            # WHY DictReader: maps header names directly to dictionary keys, making
-            # parsing readable and less error-prone than numeric indices.
 
-            # TODO 4: Execute a SELECT query to retrieve rows from 'practice_readings'.
-            #         Fetch and print the results to verify the inserts succeeded.
-            cur.execute("SELECT station, timestamp, temperature_c FROM practice_readings LIMIT 5")
+            cur.execute(
+                "SELECT station, timestamp, temperature_c FROM practice_readings ORDER BY id DESC LIMIT 5"
+            )
             rows = cur.fetchall()
             print("Query results:")
             for row in rows:
                 print(f"  Station: {row[0]}, Time: {row[1]}, Temp: {row[2]}°C")
 
-            # TODO 5: Commit your transaction using connection.commit().
             conn.commit()
 
 
 if __name__ == "__main__":
-    print("Connecting to PostgreSQL and running operations...")
-    run_postgres_ops(POSTGRES_URL, CSV_PATH)
+    postgres_url, storage_conn = require_env()
+    blob_name = f"{BLOB_PREFIX}weather_data.csv"
+
+    print("Step 1: upload CSV to Blob Storage...")
+    upload_csv_to_blob(storage_conn, CSV_PATH, blob_name)
+    print(f"  Uploaded to {CONTAINER_NAME}/{blob_name}")
+
+    print("Step 2: ingest CSV into Postgres...")
+    run_postgres_ops(postgres_url, CSV_PATH)
     print("PostgreSQL operations completed successfully.")
