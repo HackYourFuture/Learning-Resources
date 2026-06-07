@@ -44,3 +44,13 @@ IMAGE_TAG="<your_acr_tag>"
 # TODO 4: Print the Azure Portal URL to your job:
 #   SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 #   echo "https://portal.azure.com/#resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/rg-hyf-data/providers/Microsoft.App/jobs/${JOB_NAME}"
+
+# TODO 5: Start the job (create ≠ start — the job does not run until you start it):
+#   az containerapp job start --name "${JOB_NAME}" --resource-group rg-hyf-data
+
+# TODO 6: Read execution logs (--container is the job name, not the image name):
+#   az containerapp job logs show --name "${JOB_NAME}" --resource-group rg-hyf-data --container "${JOB_NAME}"
+
+# TODO 7: If the run succeeded, verify outputs (same loop as Ex2/Ex3):
+#   az storage blob list --account-name hyfstoragedev --container-name raw --auth-mode login --prefix <your_prefix> -o table
+#   DBeaver: confirm new rows or check the teacher demo on screen

@@ -1,6 +1,6 @@
 # Exercise 4: Create a Container App Job
 
-Write the `az containerapp job create` command for the **shared** HYF environment, validate it against the gotchas list, then create and inspect your job.
+Write the `az containerapp job create` command for the **shared** HYF environment, validate it against the gotchas list, then create, **start**, and verify your job.
 
 ## Setup
 
@@ -28,17 +28,22 @@ az acr repository show-tags \
    bash validate_flags.sh exercise.sh
    ```
 4. Once validation passes, run your create command, then list jobs and print the portal link.
-5. Optional: start the job and read logs:
+5. **Start** the job and read **logs** (in class you always do this after create):
    ```bash
    az containerapp job start --name job-practice-<your_name> --resource-group rg-hyf-data
    az containerapp job logs show --name job-practice-<your_name> --resource-group rg-hyf-data --container job-practice-<your_name>
    ```
+6. If the execution succeeded, verify outputs the same way as Ex2/Ex3: blob list + Postgres/DBeaver row check.
+
+> **Class tip:** your teacher may first create a job **without** `--registry-server` to show the image-pull error on start, then recreate with the full flags.
 
 ## Success criteria
 
 - `validate_flags.sh` passes on your `exercise.sh`.
 - The create command targets `rg-hyf-data` / `env-hyf-data` / `hyfregistry.azurecr.io` (not fictional `rg-weather-dev` names).
 - `az containerapp job list` shows your job, and the portal URL opens the correct blade.
+- You ran **`job start`** and read **`job logs show`** with `--container` equal to the job name.
+- You can explain why **create ≠ start** and why **`--registry-server`** is required.
 
 ## Cleanup
 

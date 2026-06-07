@@ -40,3 +40,18 @@ az containerapp job list --resource-group rg-hyf-data -o table
 SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 echo ""
 echo "Azure Portal URL: https://portal.azure.com/#resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/rg-hyf-data/providers/Microsoft.App/jobs/${JOB_NAME}"
+
+echo ""
+echo "=== Starting job ==="
+az containerapp job start --name "${JOB_NAME}" --resource-group rg-hyf-data
+# WHY start after create: Manual trigger jobs do not run on create; students who skip start see zero rows in Postgres.
+
+echo ""
+echo "=== Job logs ==="
+az containerapp job logs show --name "${JOB_NAME}" --resource-group rg-hyf-data --container "${JOB_NAME}"
+# WHY --container = job name: the logs command names the replica container; for jobs it defaults to the job resource name.
+
+echo ""
+echo "=== Verify outputs (if execution succeeded) ==="
+echo "Blob:  az storage blob list --account-name hyfstoragedev --container-name raw --auth-mode login --prefix raw/ -o table"
+echo "Rows:  confirm in DBeaver or compare with Ex3 practice_readings pattern"
