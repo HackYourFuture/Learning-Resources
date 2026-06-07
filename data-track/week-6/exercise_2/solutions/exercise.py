@@ -4,10 +4,10 @@ Upload a JSON file to Azure Blob Storage from Python, then verify it from the CL
 This trains the upload-from-code, check-from-CLI loop you will use throughout the
 assignment to prove your pipeline actually wrote what it claims to have written.
 
-This exercise needs a real Azure Storage account. Your teacher provides the
-connection string. Export it before running:
+This exercise needs a real Azure Storage account. Retrieve the connection string
+from the Key Vault using the CLI commands from Chapter 5. Export it before running:
 
-    export AZURE_STORAGE_CONNECTION_STRING='DefaultEndpointsProtocol=https;...'
+    export AZURE_STORAGE_CONNECTION_STRING="$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)"
 
 The Codespace shell session lasts long enough for one practice run. For a longer
 session, put it in `.env` and run with `python-dotenv`, or set it in your shell
@@ -30,9 +30,8 @@ def require_connection_string() -> str:
     if not conn:
         print(
             "AZURE_STORAGE_CONNECTION_STRING is not set.\n"
-            "Ask your teacher for the shared storage account's connection string,\n"
-            "then export it before running:\n\n"
-            "    export AZURE_STORAGE_CONNECTION_STRING='DefaultEndpointsProtocol=https;...'\n",
+            "Retrieve it from Key Vault using the CLI, then export it before running:\n\n"
+            "    export AZURE_STORAGE_CONNECTION_STRING=\"$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)\"\n",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -79,8 +78,8 @@ def main() -> None:
     # TODO 3: After uploading, print:
     #           - the full blob name you wrote
     #           - the two CLI commands the student should now run to verify:
-    #               az storage blob list --account-name <name> --container-name raw --prefix test/ --output table --auth-mode login
-    #               az storage blob download --account-name <name> --container-name raw --name <blob_name> --file /tmp/downloaded.json --auth-mode login
+    #               az storage blob list --account-name hyfstoragedev --container-name raw --prefix test/ --output table --auth-mode login
+    #               az storage blob download --account-name hyfstoragedev --container-name raw --name <blob_name> --file /tmp/downloaded.json --auth-mode login
     account_name = service.account_name
     print(f"Uploaded {blob_name} ({len(payload_bytes)} bytes)")
     print("Next steps (run from the CLI):")
@@ -104,8 +103,8 @@ if __name__ == "__main__":
 #
 # Uploaded test/practice_2026-04-01.json (123 bytes)
 # Next steps (run from the CLI):
-#   az storage blob list     --account-name <name> --container-name raw --prefix test/ --output table --auth-mode login
-#   az storage blob download --account-name <name> --container-name raw --name test/practice_2026-04-01.json --file /tmp/downloaded.json --auth-mode login
+#   az storage blob list     --account-name hyfstoragedev --container-name raw --prefix test/ --output table --auth-mode login
+#   az storage blob download --account-name hyfstoragedev --container-name raw --name test/practice_2026-04-01.json --file /tmp/downloaded.json --auth-mode login
 #
 # Expected output WITHOUT the env var (this is the graceful failure mode):
 #

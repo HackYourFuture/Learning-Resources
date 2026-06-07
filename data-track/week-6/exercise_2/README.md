@@ -4,11 +4,11 @@ Upload a JSON file from Python, then verify it from the CLI. This is the loop yo
 
 ## Setup
 
-This exercise needs the **shared Azure Storage account**. Ask your teacher for the connection string (or read it from the Key Vault you have access to).
+This exercise needs the **shared Azure Storage account**. Retrieve the connection string from Key Vault using the CLI commands from Chapter 5.
 
 ```bash
 pip install -r requirements.txt
-export AZURE_STORAGE_CONNECTION_STRING='DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net'
+export AZURE_STORAGE_CONNECTION_STRING="$(az keyvault secret show --vault-name kv-hyf-data --name storage-connection-string --query value -o tsv)"
 ```
 
 `.env.example` shows the shape. Copy it to `.env` (gitignored) if you prefer to keep it on disk.
@@ -21,7 +21,7 @@ The starter detects a missing connection string and exits with a clear message: 
 2. Finish TODO 2: upload the JSON payload returned by `build_payload()` to the blob name returned by `build_blob_name()`. Use `overwrite=True` so you can rerun without conflicts.
 3. Finish TODO 3: print the blob name plus the two `az storage blob ...` commands the student should now run.
 4. From the CLI, run the two `az storage blob` commands the script printed. Confirm the blob appears in the list and the downloaded content matches what you uploaded.
-5. Clean up: `az storage blob delete --account-name <name> --container-name raw --name test/practice_<date>.json --auth-mode login`.
+5. Clean up: `az storage blob delete --account-name hyfstoragedev --container-name raw --name test/practice_<date>.json --auth-mode login`.
 
 ## Success criteria
 
