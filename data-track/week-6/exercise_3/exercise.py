@@ -25,21 +25,28 @@ if not POSTGRES_URL:
 def run_postgres_ops(url: str, csv_path: Path) -> None:
     # TODO 1: Connect to the PostgreSQL database using psycopg2.connect(url).
     #         Wrap the connection in contextlib.closing() to ensure it closes cleanly.
-    #         Create a cursor from the connection and execute a CREATE TABLE query.
-    #         The table should be named 'practice_readings' and contain:
+    #         Create a cursor from the connection.
+    #
+    # TODO 2: Create and set search path to a student-specific schema (e.g. dev_lasse)
+    #         to prevent clashing with other students sharing the team1 database:
+    #           "CREATE SCHEMA IF NOT EXISTS dev_<name>;"
+    #           "SET search_path TO dev_<name>;"
+    #
+    # TODO 3: Execute a CREATE TABLE query. The table should be named 'practice_readings'
+    #         and contain:
     #           - id SERIAL PRIMARY KEY
     #           - station TEXT
     #           - timestamp TIMESTAMPTZ
     #           - temperature_c DOUBLE PRECISION
     #
-    # TODO 2: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
+    # TODO 4: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
     #         parsing temperature_c as a float, and insert each row into the
     #         'practice_readings' table. Use parameterised query (with %s placeholders).
     #
-    # TODO 3: Execute a SELECT query to retrieve all rows from 'practice_readings'.
+    # TODO 5: Execute a SELECT query to retrieve all rows from 'practice_readings'.
     #         Fetch and print the results to verify the inserts succeeded.
     #
-    # TODO 4: Commit your transaction using connection.commit().
+    # TODO 6: Commit your transaction using connection.commit().
     raise NotImplementedError
 
 

@@ -25,14 +25,26 @@ if not POSTGRES_URL:
 def run_postgres_ops(url: str, csv_path: Path) -> None:
     # TODO 1: Connect to the PostgreSQL database using psycopg2.connect(url).
     #         Wrap the connection in contextlib.closing() to ensure it closes cleanly.
-    #         Create a cursor from the connection and execute a CREATE TABLE query.
-    #         The table should be named 'practice_readings' and contain:
-    #           - id SERIAL PRIMARY KEY
-    #           - station TEXT
-    #           - timestamp TIMESTAMPTZ
-    #           - temperature_c DOUBLE PRECISION
+    #         Create a cursor from the connection.
+    #
+    # TODO 2: Create and set search path to a student-specific schema (e.g. dev_lasse)
+    #         to prevent clashing with other students sharing the team1 database:
+    #           "CREATE SCHEMA IF NOT EXISTS dev_<name>;"
+    #           "SET search_path TO dev_<name>;"
     with closing(psycopg2.connect(url)) as conn:
         with conn.cursor() as cur:
+            # Create and set schema search path
+            cur.execute("CREATE SCHEMA IF NOT EXISTS dev_practice;")
+            cur.execute("SET search_path TO dev_practice;")
+            # WHY use a dedicated schema: prevents different students or processes
+            # from overwriting each other's tables in the public schema of a shared database.
+
+            # TODO 3: Execute a CREATE TABLE query. The table should be named 'practice_readings'
+            #         and contain:
+            #           - id SERIAL PRIMARY KEY
+            #           - station TEXT
+            #           - timestamp TIMESTAMPTZ
+            #           - temperature_c DOUBLE PRECISION
             cur.execute(
                 """
                 CREATE TABLE IF NOT EXISTS practice_readings (
@@ -44,7 +56,7 @@ def run_postgres_ops(url: str, csv_path: Path) -> None:
                 """
             )
 
-            # TODO 2: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
+            # TODO 4: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
             #         parsing temperature_c as a float, and insert each row into the
             #         'practice_readings' table. Use parameterised query (with %s placeholders).
             with open(csv_path, mode="r", encoding="utf-8") as f:
@@ -60,7 +72,7 @@ def run_postgres_ops(url: str, csv_path: Path) -> None:
             # WHY DictReader: maps header names directly to dictionary keys, making
             # parsing readable and less error-prone than numeric indices.
 
-            # TODO 3: Execute a SELECT query to retrieve all rows from 'practice_readings'.
+            # TODO 5: Execute a SELECT query to retrieve all rows from 'practice_readings'.
             #         Fetch and print the results to verify the inserts succeeded.
             cur.execute("SELECT station, timestamp, temperature_c FROM practice_readings LIMIT 5")
             rows = cur.fetchall()
@@ -68,7 +80,7 @@ def run_postgres_ops(url: str, csv_path: Path) -> None:
             for row in rows:
                 print(f"  Station: {row[0]}, Time: {row[1]}, Temp: {row[2]}°C")
 
-            # TODO 4: Commit your transaction using connection.commit().
+            # TODO 6: Commit your transaction using connection.commit().
             conn.commit()
 
 
