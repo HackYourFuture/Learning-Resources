@@ -32,6 +32,7 @@ week-6/
 │       └── exercise.py
 ├── exercise_3/
 │   ├── exercise.py
+│   ├── weather_data.csv              # sample data to ingest
 │   ├── README.md
 │   └── solutions/
 │       └── exercise.py

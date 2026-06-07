@@ -1,19 +1,19 @@
-"""Exercise 3: Connect to Postgres, Create Table, Insert and Query.
+"""Exercise 3: Connect to Postgres, Create Table, Ingest CSV and Query.
 
 This exercise verifies that you can connect to your Azure Database for PostgreSQL,
-create a table, insert rows, and query them using Python and psycopg2.
-
-It requires the environment variable `POSTGRES_URL` to be set.
+create a table, read rows from a local CSV file, insert them using psycopg2,
+and query the table to confirm the ingestion succeeded.
 """
 
 import os
 import sys
+import csv
+from pathlib import Path
 from contextlib import closing
 import psycopg2
 
-# We retrieve the connection URL from environment variables.
-# You can set it locally using: export POSTGRES_URL="postgresql://..."
 POSTGRES_URL = os.environ.get("POSTGRES_URL")
+CSV_PATH = Path(__file__).parent.parent / "weather_data.csv"
 
 if not POSTGRES_URL:
     print("Error: POSTGRES_URL environment variable is not set.")
@@ -22,15 +22,17 @@ if not POSTGRES_URL:
     sys.exit(1)
 
 
-def run_postgres_ops(url: str) -> None:
+def run_postgres_ops(url: str, csv_path: Path) -> None:
     # TODO 1: Connect to the PostgreSQL database using psycopg2.connect(url).
     #         Wrap the connection in contextlib.closing() to ensure it closes cleanly.
     #         Create a cursor from the connection and execute a CREATE TABLE query.
-    #         The table should be named 'practice_readings' and contain some columns
-    #         (e.g., station TEXT, timestamp TIMESTAMPTZ, temperature_c DOUBLE PRECISION).
+    #         The table should be named 'practice_readings' and contain:
+    #           - id SERIAL PRIMARY KEY
+    #           - station TEXT
+    #           - timestamp TIMESTAMPTZ
+    #           - temperature_c DOUBLE PRECISION
     with closing(psycopg2.connect(url)) as conn:
         with conn.cursor() as cur:
-            # Create the table
             cur.execute(
                 """
                 CREATE TABLE IF NOT EXISTS practice_readings (
@@ -41,26 +43,22 @@ def run_postgres_ops(url: str) -> None:
                 )
                 """
             )
-            # WHY use serial ID and distinct columns: standard relational design
-            # mapping schema.
 
-            # TODO 2: Insert two rows of sample data.
-            # Use parameterised query with %s to avoid SQL injection risks.
-            cur.execute(
-                """
-                INSERT INTO practice_readings (station, timestamp, temperature_c)
-                VALUES (%s, %s, %s)
-                """,
-                ("copenhagen", "2024-01-15T12:00:00Z", 2.5),
-            )
-            cur.execute(
-                """
-                INSERT INTO practice_readings (station, timestamp, temperature_c)
-                VALUES (%s, %s, %s)
-                """,
-                ("amsterdam", "2024-01-15T12:00:00Z", 4.8),
-            )
-            # WHY parameters: %s allows the driver to escape input values correctly.
+            # TODO 2: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
+            #         parsing temperature_c as a float, and insert each row into the
+            #         'practice_readings' table. Use parameterised query (with %s placeholders).
+            with open(csv_path, mode="r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    cur.execute(
+                        """
+                        INSERT INTO practice_readings (station, timestamp, temperature_c)
+                        VALUES (%s, %s, %s)
+                        """,
+                        (row["station"], row["timestamp"], float(row["temperature_c"])),
+                    )
+            # WHY DictReader: maps header names directly to dictionary keys, making
+            # parsing readable and less error-prone than numeric indices.
 
             # TODO 3: Execute a SELECT query to retrieve all rows from 'practice_readings'.
             #         Fetch and print the results to verify the inserts succeeded.
@@ -72,11 +70,9 @@ def run_postgres_ops(url: str) -> None:
 
             # TODO 4: Commit your transaction using connection.commit().
             conn.commit()
-            # WHY commit: DDL (create table) and DML (inserts) in Postgres need an
-            # explicit commit to persist when autocommit is off.
 
 
 if __name__ == "__main__":
     print("Connecting to PostgreSQL and running operations...")
-    run_postgres_ops(POSTGRES_URL)
+    run_postgres_ops(POSTGRES_URL, CSV_PATH)
     print("PostgreSQL operations completed successfully.")

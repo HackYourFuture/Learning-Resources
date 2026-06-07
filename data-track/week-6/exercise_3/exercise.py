@@ -1,19 +1,19 @@
-"""Exercise 3: Connect to Postgres, Create Table, Insert and Query.
+"""Exercise 3: Connect to Postgres, Create Table, Ingest CSV and Query.
 
 This exercise verifies that you can connect to your Azure Database for PostgreSQL,
-create a table, insert rows, and query them using Python and psycopg2.
-
-It requires the environment variable `POSTGRES_URL` to be set.
+create a table, read rows from a local CSV file, insert them using psycopg2,
+and query the table to confirm the ingestion succeeded.
 """
 
 import os
 import sys
+import csv
+from pathlib import Path
 from contextlib import closing
 import psycopg2
 
-# We retrieve the connection URL from environment variables.
-# You can set it locally using: export POSTGRES_URL="postgresql://..."
 POSTGRES_URL = os.environ.get("POSTGRES_URL")
+CSV_PATH = Path(__file__).parent / "weather_data.csv"
 
 if not POSTGRES_URL:
     print("Error: POSTGRES_URL environment variable is not set.")
@@ -22,14 +22,19 @@ if not POSTGRES_URL:
     sys.exit(1)
 
 
-def run_postgres_ops(url: str) -> None:
+def run_postgres_ops(url: str, csv_path: Path) -> None:
     # TODO 1: Connect to the PostgreSQL database using psycopg2.connect(url).
     #         Wrap the connection in contextlib.closing() to ensure it closes cleanly.
     #         Create a cursor from the connection and execute a CREATE TABLE query.
-    #         The table should be named 'practice_readings' and contain some columns
-    #         (e.g., station TEXT, timestamp TIMESTAMPTZ, temperature_c DOUBLE PRECISION).
+    #         The table should be named 'practice_readings' and contain:
+    #           - id SERIAL PRIMARY KEY
+    #           - station TEXT
+    #           - timestamp TIMESTAMPTZ
+    #           - temperature_c DOUBLE PRECISION
     #
-    # TODO 2: Insert two rows of sample data.
+    # TODO 2: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
+    #         parsing temperature_c as a float, and insert each row into the
+    #         'practice_readings' table. Use parameterised query (with %s placeholders).
     #
     # TODO 3: Execute a SELECT query to retrieve all rows from 'practice_readings'.
     #         Fetch and print the results to verify the inserts succeeded.
@@ -40,5 +45,5 @@ def run_postgres_ops(url: str) -> None:
 
 if __name__ == "__main__":
     print("Connecting to PostgreSQL and running operations...")
-    run_postgres_ops(POSTGRES_URL)
+    run_postgres_ops(POSTGRES_URL, CSV_PATH)
     print("PostgreSQL operations completed successfully.")

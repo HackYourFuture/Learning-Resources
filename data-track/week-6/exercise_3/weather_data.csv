@@ -1,0 +1,4 @@
+station,timestamp,temperature_c
+copenhagen,2024-01-15T12:00:00Z,2.5
+amsterdam,2024-01-15T12:00:00Z,4.8
+berlin,2024-01-15T12:00:00Z,1.2
