@@ -16,13 +16,12 @@ Connect to the shared Azure Database for PostgreSQL, create a practice table in 
 ## Task
 
 1. Open `exercise.py` and implement `run_postgres_ops(url, csv_path)`.
-2. Complete the TODOs in order:
+2. Complete the five TODOs in order:
    * **TODO 1:** Connect with `psycopg2.connect(url)` inside `contextlib.closing()`.
-   * **TODO 2:** Create a student-specific schema (e.g. `dev_lasse`) and `SET search_path` to it — required on the shared `team1` database so you do not clash with classmates.
-   * **TODO 3:** `CREATE TABLE IF NOT EXISTS practice_readings` with the columns specified in the file.
-   * **TODO 4:** Read `weather_data.csv` with `csv.DictReader` and insert each row with a parameterised `INSERT`.
-   * **TODO 5:** `SELECT` and print the inserted rows.
-   * **TODO 6:** `conn.commit()`.
+   * **TODO 2:** Create a student-specific schema (e.g. `dev_lasse`), `SET search_path` to it, then run `cur.execute(CREATE_PRACTICE_READINGS_SQL)` — the table DDL is pre-written at the top of the file.
+   * **TODO 3:** Read `weather_data.csv` with `csv.DictReader` and insert each row with a parameterised `INSERT`.
+   * **TODO 4:** `SELECT` and print the inserted rows.
+   * **TODO 5:** `conn.commit()`.
 3. Run the script:
    ```bash
    uv run python exercise.py

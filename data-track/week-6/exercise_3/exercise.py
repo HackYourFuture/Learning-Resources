@@ -15,6 +15,16 @@ import psycopg2
 POSTGRES_URL = os.environ.get("POSTGRES_URL")
 CSV_PATH = Path(__file__).parent / "weather_data.csv"
 
+# Table DDL is provided so you can focus on connection, schema isolation, and DML.
+CREATE_PRACTICE_READINGS_SQL = """
+CREATE TABLE IF NOT EXISTS practice_readings (
+    id SERIAL PRIMARY KEY,
+    station TEXT NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
+    temperature_c DOUBLE PRECISION NOT NULL
+)
+"""
+
 if not POSTGRES_URL:
     print("Error: POSTGRES_URL environment variable is not set.")
     print("Please set it in your terminal, e.g.:")
@@ -31,22 +41,16 @@ def run_postgres_ops(url: str, csv_path: Path) -> None:
     #         to prevent clashing with other students sharing the team1 database:
     #           "CREATE SCHEMA IF NOT EXISTS dev_<name>;"
     #           "SET search_path TO dev_<name>;"
+    #         Then execute CREATE_PRACTICE_READINGS_SQL with cur.execute().
     #
-    # TODO 3: Execute a CREATE TABLE query. The table should be named 'practice_readings'
-    #         and contain:
-    #           - id SERIAL PRIMARY KEY
-    #           - station TEXT
-    #           - timestamp TIMESTAMPTZ
-    #           - temperature_c DOUBLE PRECISION
-    #
-    # TODO 4: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
+    # TODO 3: Open `csv_path` using Python's `csv.DictReader`. Loop over the rows,
     #         parsing temperature_c as a float, and insert each row into the
     #         'practice_readings' table. Use parameterised query (with %s placeholders).
     #
-    # TODO 5: Execute a SELECT query to retrieve all rows from 'practice_readings'.
+    # TODO 4: Execute a SELECT query to retrieve rows from 'practice_readings'.
     #         Fetch and print the results to verify the inserts succeeded.
     #
-    # TODO 6: Commit your transaction using connection.commit().
+    # TODO 5: Commit your transaction using connection.commit().
     raise NotImplementedError
 
 
