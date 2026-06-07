@@ -1,35 +1,35 @@
-# Exercise 5: Cost Estimation Challenge
+# Exercise 5: Query Live Azure Costs
 
-Estimate the monthly cost of three Azure configurations and quantify the saving from stopping the shared Postgres server outside class hours. Pure Python arithmetic: no Azure access required.
+Connect to the Azure Cost Management API to query the actual, real-time costs incurred by the shared resource group `rg-hyf-data`.
 
 ## Setup
 
-No extra dependencies. The starter uses only the standard library.
+This exercise requires logging in to Azure CLI and setting your active subscription ID as an environment variable.
+
+1. Login using your HackYourFuture Azure account:
+   ```bash
+   az login --use-device-code --tenant 07a14c4e-d88c-42f7-83b3-13af7e57ff3d
+   ```
+2. Set your `AZURE_SUBSCRIPTION_ID` environment variable:
+   ```bash
+   export AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+   ```
 
 ## Task
 
-The constants at the top of `exercise.py` are illustrative West Europe EUR prices from the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/). Use them as-is so the self-check numbers reproduce.
-
-1. Implement `postgres_compute_cost(hours_running)` (TODO 1).
-2. Implement `postgres_storage_cost()` (TODO 2).
-3. Implement `container_job_cost(executions_per_day, seconds_per_execution)` (TODO 3). Use vCPU-seconds and GiB-seconds across a 30-day month.
-4. Implement `class_postgres_saving(class_hours_per_day, class_days_per_week)` (TODO 4). Convert "8 hours/day, 5 days/week" into total monthly hours, then compare against always-on (730 h/month).
-5. Run `python3 exercise.py`. Confirm the four scenarios print numbers close to the `# Expected output:` block at the bottom of the file.
+1. Open `exercise.py`.
+2. Implement `get_actual_costs(subscription_id, resource_group)`. You should:
+   * Initialize a `DefaultAzureCredential` instance.
+   * Fetch an access token for the Azure management plane (`https://management.azure.com/.default`).
+   * Perform a POST request using the `requests` library to the Cost Management query endpoint:
+     `https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CostManagement/query?api-version=2021-10-01`
+   * Pass the JSON payload requesting daily pretax actual costs grouped by resource group.
+   * Parse the response rows and return the daily cost records.
+3. Run the script:
+   ```bash
+   python3 exercise.py
+   ```
 
 ## Success criteria
 
-- All four functions return values without raising.
-- Scenario A (24/7 Postgres) totals about EUR 19.74/month.
-- Scenario B (stopped 16h/day) totals about EUR 8.96/month.
-- Scenario C (Container Job 5×/day for 60s) totals about EUR 0.19/month.
-- Scenario D shows a saving of about EUR 12/month from class-only operation.
-
-## Stretch
-
-- The numbers shift if you switch from West Europe to North Europe (cheaper compute, similar storage). Look up the actual North Europe figures and run a "should we move regions?" comparison.
-- Add a fifth scenario: what if the class shared one Postgres across two cohorts (still 8h/day but 10 days/week)? Use `class_postgres_saving()` with new parameters.
-- Compare the Container Job to a Container App revision running 24/7 with min-replicas=1. What is the break-even number of executions per day?
-
-## After this exercise
-
-Write a 3 to 4 sentence paragraph (paper, README, or a quiz answer) describing how you would structure costs in a real project. Reference at least one specific number from your scenarios. This is the explanation step from the practice chapter.
+- Running `python3 exercise.py` queries the live Cost Management API successfully and prints the daily pre-tax costs for `rg-hyf-data` along with a summed Month-to-Date total.

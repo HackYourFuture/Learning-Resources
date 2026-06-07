@@ -1,115 +1,119 @@
-"""Exercise 5: Cost estimation challenge.
+"""Exercise 5: Query Live Azure Costs.
 
-Estimate the monthly cost of three configurations and quantify the saving from
-stopping the shared Postgres server outside class hours. Pure arithmetic, no
-Azure calls. The numbers below are illustrative West Europe figures (EUR) from
-the Azure pricing calculator and Azure documentation circa 2024 to 2025; in the
-assignment you re-check them against the live calculator before committing to a
-budget.
+This exercise connects to the Azure Cost Management API to query the actual,
+real-time costs incurred by the shared resource group `rg-hyf-data`.
 
-The point is the *habit*: do the napkin math before you provision, not after.
+It uses the standard `azure-identity` package to obtain an Azure access token
+under your login credentials, and calls the ARM REST API.
 """
 
-# Illustrative West Europe prices (EUR). Treat these as the "agreed numbers" for
-# this exercise; in real budgeting, run the figures against the Azure pricing
-# calculator the same week you provision.
-POSTGRES_B1MS_HOURLY_EUR = 0.022       # Standard_B1ms flexible server, compute only
-POSTGRES_STORAGE_GB_MONTH_EUR = 0.115  # 32 GB storage tier, included for simplicity
-POSTGRES_STORAGE_GB = 32
-CONTAINER_JOB_VCPU_SECOND_EUR = 0.000034
-CONTAINER_JOB_GIB_SECOND_EUR = 0.0000038
-CONTAINER_JOB_VCPU = 0.5
-CONTAINER_JOB_GIB = 1.0
-HOURS_PER_MONTH = 730  # Azure-standard month length
+import os
+import sys
+import requests
+from azure.identity import DefaultAzureCredential
+
+# Get subscription ID from env
+SUBSCRIPTION_ID = os.environ.get("AZURE_SUBSCRIPTION_ID")
+RESOURCE_GROUP = os.environ.get("AZURE_RESOURCE_GROUP", "rg-hyf-data")
+
+if not SUBSCRIPTION_ID:
+    print("Error: AZURE_SUBSCRIPTION_ID is not set.")
+    print("Please export your active subscription ID first using:")
+    print("  export AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)")
+    sys.exit(1)
 
 
-def postgres_compute_cost(hours_running: float) -> float:
-    """Compute cost for `hours_running` of the Postgres server in one month.
+def get_actual_costs(subscription_id: str, resource_group: str) -> list[tuple[float, int, str, str]]:
+    """Query the Azure Cost Management REST API for daily pretax costs.
 
-    Storage is billed regardless of whether compute is running and is added by
-    the caller via postgres_storage_cost().
+    Returns a list of tuples: (cost, date_val, resource_group_name, currency).
     """
-    # TODO 1: Multiply hourly rate by hours_running.
-    return hours_running * POSTGRES_B1MS_HOURLY_EUR
-# WHY split compute and storage: stopping an Azure Postgres flexible server pauses
-# compute billing but keeps storage billing live. Mixing them into one number
-# hides the fact that "stopped server" still costs ~EUR 3.68/month per 32 GB.
-# Separating them in code mirrors the line items on the actual Azure bill.
+    # TODO 1: Initialize the DefaultAzureCredential.
+    cred = DefaultAzureCredential()
 
+    # TODO 2: Obtain an access token for the management plane: "https://management.azure.com/.default"
+    token = cred.get_token("https://management.azure.com/.default")
 
-def postgres_storage_cost() -> float:
-    """Storage cost is fixed regardless of compute hours."""
-    # TODO 2: Return POSTGRES_STORAGE_GB * POSTGRES_STORAGE_GB_MONTH_EUR.
-    return POSTGRES_STORAGE_GB * POSTGRES_STORAGE_GB_MONTH_EUR
+    # TODO 3: Construct the POST request to the Cost Management query endpoint:
+    #         https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CostManagement/query?api-version=2021-10-01
+    url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CostManagement/query?api-version=2021-10-01"
 
+    # TODO 4: Send the query payload.
+    payload = {
+        "type": "ActualCost",
+        "timeframe": "MonthToDate",
+        "dataset": {
+            "granularity": "Daily",
+            "aggregation": {
+                "totalCost": {
+                    "name": "PreTaxCost",
+                    "function": "Sum"
+                }
+            },
+            "grouping": [
+                {
+                    "type": "Dimension",
+                    "name": "ResourceGroupName"
+                }
+            ]
+        }
+    }
 
-def container_job_cost(executions_per_day: int, seconds_per_execution: int) -> float:
-    """Monthly cost for the Container App Job at the given cadence."""
-    # TODO 3: Compute total vCPU-seconds and GiB-seconds across the whole month
-    #         (30 days), multiply each by its rate, and sum.
-    #         total_seconds = executions_per_day * seconds_per_execution * 30
-    #         vcpu_seconds  = total_seconds * CONTAINER_JOB_VCPU
-    #         gib_seconds   = total_seconds * CONTAINER_JOB_GIB
-    total_seconds = executions_per_day * seconds_per_execution * 30
-    vcpu_cost = total_seconds * CONTAINER_JOB_VCPU * CONTAINER_JOB_VCPU_SECOND_EUR
-    gib_cost = total_seconds * CONTAINER_JOB_GIB * CONTAINER_JOB_GIB_SECOND_EUR
-    return vcpu_cost + gib_cost
-# WHY vCPU-seconds AND GiB-seconds: Container Apps Consumption plans bill on two
-# axes. Halving memory (1 GiB -> 0.5 GiB) cuts the GiB-seconds half of the bill,
-# not the vCPU half. Students who only sum one axis underestimate cost by the
-# missing dimension, which then surprises them on the assignment.
+    headers = {
+        "Authorization": f"Bearer {token.token}",
+        "Content-Type": "application/json"
+    }
 
+    res = requests.post(url, headers=headers, json=payload)
 
-def class_postgres_saving(class_hours_per_day: int, class_days_per_week: int) -> tuple[float, float, float]:
-    """Compare 24/7 vs class-hours-only Postgres compute, return (always_on, class_only, saving)."""
-    always_on_hours = HOURS_PER_MONTH
-    # TODO 4: Compute the class-hours-only running hours. Use:
-    #           weeks_per_month = HOURS_PER_MONTH / (24 * 7)
-    #           class_only_hours = class_hours_per_day * class_days_per_week * weeks_per_month
-    weeks_per_month = HOURS_PER_MONTH / (24 * 7)
-    class_only_hours = class_hours_per_day * class_days_per_week * weeks_per_month
-    always_on_cost = postgres_compute_cost(always_on_hours)
-    class_only_cost = postgres_compute_cost(class_only_hours)
-    return always_on_cost, class_only_cost, always_on_cost - class_only_cost
-# WHY weeks_per_month from HOURS_PER_MONTH rather than 4.345: Azure consistently
-# bills against 730 hours/month. Deriving weeks from the same constant keeps
-# everything in one frame of reference, so a student who edits HOURS_PER_MONTH
-# (e.g. to test "what if we used 720?") gets a self-consistent answer rather
-# than a mix of two different month definitions.
+    # TODO 5: Parse the status and response JSON. If 200, return the rows from the response properties.
+    if res.status_code != 200:
+        raise RuntimeError(f"Cost Management query failed with status {res.status_code}: {res.text}")
+
+    data = res.json()
+    properties = data.get("properties", {})
+    rows = properties.get("rows", [])
+
+    # Map column headers dynamically to avoid ordering assumptions
+    columns = [col["name"] for col in properties.get("columns", [])]
+    cost_idx = columns.index("PreTaxCost")
+    date_idx = columns.index("UsageDate")
+    rg_idx = columns.index("ResourceGroupName")
+    curr_idx = columns.index("Currency")
+
+    results = []
+    for r in rows:
+        results.append((
+            float(r[cost_idx]),
+            int(r[date_idx]),
+            r[rg_idx],
+            r[curr_idx]
+        ))
+    return results
+# WHY REST API request instead of SDK: The `azure-mgmt-costmanagement` python SDK
+# exists, but it requires introducing another large package. Querying the Cost
+# Management REST API endpoint directly using standard `requests` and the token
+# from `DefaultAzureCredential` allows querying costs in fewer lines of code
+# and is less fragile across SDK version bumps.
 
 
 if __name__ == "__main__":
-    print("Scenario A: Standard_B1ms Postgres running 24/7")
-    a_compute = postgres_compute_cost(HOURS_PER_MONTH)
-    a_storage = postgres_storage_cost()
-    print(f"  compute: EUR {a_compute:6.2f}  storage: EUR {a_storage:6.2f}  total: EUR {a_compute + a_storage:6.2f}")
-
-    print("\nScenario B: same server, stopped 16 hours/day (running 8h)")
-    b_compute = postgres_compute_cost(8 * 30)  # 30 days * 8 hours
-    print(f"  compute: EUR {b_compute:6.2f}  storage: EUR {a_storage:6.2f}  total: EUR {b_compute + a_storage:6.2f}")
-
-    print("\nScenario C: Container App Job running 5 times/day for 60 seconds")
-    c_job = container_job_cost(executions_per_day=5, seconds_per_execution=60)
-    print(f"  total: EUR {c_job:6.2f}")
-
-    print("\nScenario D: class-only Postgres (8h/day, 5 days/week) vs always-on")
-    always_on, class_only, saving = class_postgres_saving(class_hours_per_day=8, class_days_per_week=5)
-    print(f"  always-on compute: EUR {always_on:6.2f}")
-    print(f"  class-only compute: EUR {class_only:6.2f}")
-    print(f"  saving per month:   EUR {saving:6.2f}")
-
-# Expected output (approximate, rounded to two decimals):
-#
-# Scenario A: Standard_B1ms Postgres running 24/7
-#   compute: EUR  16.06  storage: EUR   3.68  total: EUR  19.74
-#
-# Scenario B: same server, stopped 16 hours/day (running 8h)
-#   compute: EUR   5.28  storage: EUR   3.68  total: EUR   8.96
-#
-# Scenario C: Container App Job running 5 times/day for 60 seconds
-#   total: EUR   0.19
-#
-# Scenario D: class-only Postgres (8h/day, 5 days/week) vs always-on
-#   always-on compute: EUR  16.06
-#   class-only compute: EUR   3.82
-#   saving per month:   EUR  12.24
+    print(f"Querying actual costs for resource group '{RESOURCE_GROUP}'...")
+    try:
+        rows = get_actual_costs(SUBSCRIPTION_ID, RESOURCE_GROUP)
+        print("\nDaily Cost Report:")
+        print(f"{'Date':<10} {'Resource Group':<20} {'Cost (Pre-Tax)':<15}")
+        print("-" * 50)
+        total = 0.0
+        currency = "EUR"
+        for cost, date_val, rg, curr in rows:
+            total += cost
+            currency = curr
+            # Format YYYYMMDD to YYYY-MM-DD
+            date_str = f"{str(date_val)[:4]}-{str(date_val)[4:6]}-{str(date_val)[6:]}"
+            print(f"{date_str:<10} {rg:<20} {cost:.4f} {curr}")
+        print("-" * 50)
+        print(f"Total Month-to-Date: {total:.4f} {currency}")
+    except Exception as e:
+        print(f"Error querying cost API: {e}")
+        sys.exit(1)
