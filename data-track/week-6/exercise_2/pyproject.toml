@@ -1,0 +1,6 @@
+[project]
+name = "exercise_2"
+version = "0.1.0"
+dependencies = [
+    "azure-storage-blob==12.19.0",
+]

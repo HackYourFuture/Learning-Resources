@@ -1,0 +1,6 @@
+[project]
+name = "exercise_3"
+version = "0.1.0"
+dependencies = [
+    "psycopg2-binary>=2.9.0",
+]
