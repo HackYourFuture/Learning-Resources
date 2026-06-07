@@ -28,3 +28,11 @@ az containerapp job create \
   --registry-server acrweatherdev.azurecr.io \
   --container-name weather-ingest \
   --env-vars POSTGRES_URL=secretref:postgres-url AZURE_STORAGE_CONNECTION_STRING=secretref:storage-conn
+
+# Prove that the container app job has been created
+az containerapp job list --resource-group rg-weather-dev -o table
+
+# Provide the Azure Portal link to the created job
+SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+echo "Azure Portal URL: https://portal.azure.com/#resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/rg-weather-dev/providers/Microsoft.App/jobs/job-weather-ingest"
+

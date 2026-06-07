@@ -17,11 +17,16 @@
 #   Cron Expression: "0 * * * *"
 #   Env Vars: POSTGRES_URL=secretref:postgres-url AZURE_STORAGE_CONNECTION_STRING=secretref:storage-conn
 #
-# Once written, you can run the dry-run check with: python3 check.
-
 # TODO: Fill in the az containerapp job create command below
 az containerapp job create \
   --name job-weather-ingest \
   --resource-group rg-weather-dev \
   --environment env-weather-dev \
   ...
+
+# TODO: Add the command to list/prove the container app jobs in the resource group
+# e.g., az containerapp job list ...
+
+# TODO: Add commands to print the Azure Portal URL to the created Container App Job
+# Tip: Get the subscription ID with: SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+

@@ -32,6 +32,7 @@ def get_actual_costs(subscription_id: str, resource_group: str) -> list[list]:
     client = None
 
     # The scope and payload query dictionary are pre-configured for you.
+    # Reference: https://learn.microsoft.com/rest/api/costmanagement/query/usage
     scope = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}"
 
     payload = {
