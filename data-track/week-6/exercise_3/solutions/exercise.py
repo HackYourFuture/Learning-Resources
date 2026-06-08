@@ -11,7 +11,7 @@ from azure.storage.blob import BlobServiceClient
 
 POSTGRES_URL = os.environ.get("POSTGRES_URL")
 STORAGE_CONNECTION_STRING = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
-CSV_PATH = Path(__file__).parent / "weather_data.csv"
+CSV_PATH = Path(__file__).parent.parent / "weather_data.csv"
 CONTAINER_NAME = "raw"
 BLOB_PREFIX = "practice/example/"
 

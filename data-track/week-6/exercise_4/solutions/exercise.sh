@@ -8,10 +8,10 @@ set -euo pipefail
 JOB_NAME="job-practice-example"
 YOUR_HANDLE="example"
 IMAGE_TAG="1.0"
-# Primary image (student's Week 5 push):
-IMAGE="hyfregistry.azurecr.io/${YOUR_HANDLE}-weather-pipeline:${IMAGE_TAG}"
-# Fallback if the student's image is missing or fails to pull:
-# IMAGE="hyfregistry.azurecr.io/weather-pipeline:assignment"
+# Reference solution uses the teacher fallback image so `bash solutions/exercise.sh` runs
+# without a personal Week 5 ACR repo. Students substitute their own handle and tag.
+IMAGE="hyfregistry.azurecr.io/weather-pipeline:assignment"
+# Student image: hyfregistry.azurecr.io/${YOUR_HANDLE}-weather-pipeline:${IMAGE_TAG}
 
 echo "=== Validating flags before create ==="
 bash validate_flags.sh solutions/exercise.sh
@@ -45,6 +45,9 @@ echo ""
 echo "=== Starting job ==="
 az containerapp job start --name "${JOB_NAME}" --resource-group rg-hyf-data
 # WHY start after create: Manual trigger jobs do not run on create; students who skip start see zero rows in Postgres.
+
+echo "Waiting for the job to finish before fetching logs..."
+sleep 20
 
 echo ""
 echo "=== Job logs ==="
