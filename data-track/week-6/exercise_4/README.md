@@ -2,6 +2,12 @@
 
 Write the `az containerapp job create` command for the **shared** HYF environment, validate it against the gotchas list, then create, **start**, and verify your job.
 
+> 🖼️ [Visual: Container App vs Job lifecycle](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/def227672a0a9fd8ad123a95350633b3/raw/container_app_vs_job_visual.html)
+>
+> 🖼️ [Visual: local vs cloud environment variables](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/8a615596328ac899d5b99b197570e059/raw/env_vars_local_vs_cloud_visual.html)
+>
+> 🖼️ [Visual: Exercise 4 deploy sequence](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/bcd40b4adef81347309c9b931a04098f/raw/ex4_deploy_sequence_visual.html)
+
 ## Setup
 
 ```bash

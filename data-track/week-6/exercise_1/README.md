@@ -2,6 +2,8 @@
 
 List the shared Azure resources and classify them by type, chapter, and idle billing behaviour.
 
+> 🖼️ [Visual: resources in rg-hyf-data](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/bcd40b4adef81347309c9b931a04098f/raw/rg_hyf_data_resources_visual.html)
+
 ## Setup
 
 This exercise runs `az` commands. Log in first:

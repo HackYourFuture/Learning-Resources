@@ -6,6 +6,10 @@ The Week 6 practice chapter is paper-based by design because the real value live
 
 Work through them in order. None depend on each other, but the difficulty climbs gently.
 
+> 🖼️ [Visual: Week 6 end-to-end (ACR → Job → Blob + Postgres)](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/bcd40b4adef81347309c9b931a04098f/raw/deployment_flow_visual.html)
+
+Each exercise README links a diagram that matches the in-class slides. Open the visual before you start if you were not in class.
+
 ## Layout
 
 | Folder | Topic | Azure access? |

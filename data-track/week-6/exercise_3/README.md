@@ -2,6 +2,8 @@
 
 Practice the assignment's dual-output pattern: upload raw CSV to Blob Storage, then ingest the same file into Postgres in your personal schema.
 
+> 🖼️ [Visual: SQLite vs managed PostgreSQL](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/8a615596328ac899d5b99b197570e059/raw/sqlite_vs_postgres_visual.html)
+
 ## Setup
 
 1. Install dependencies:

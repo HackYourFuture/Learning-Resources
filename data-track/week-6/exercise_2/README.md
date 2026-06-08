@@ -2,6 +2,10 @@
 
 Upload a JSON file from Python, then verify it from the CLI. This is the loop you will use throughout the assignment to prove your pipeline actually wrote what it claims to have written.
 
+> 🖼️ [Visual: Blob Storage hierarchy](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/9ae619afdba937a57ceed0c03fcd7699/raw/blob_storage_hierarchy_visual.html)
+>
+> 🖼️ [Visual: three different "containers" in Week 6](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/8a615596328ac899d5b99b197570e059/raw/three_containers_visual.html)
+
 ## Setup
 
 This exercise needs the **shared Azure Storage account**. Retrieve the connection string from Key Vault using the CLI commands from Chapter 5.

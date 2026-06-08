@@ -1,6 +1,10 @@
 # Exercise 5: Cost Analysis in the Azure Portal
 
-View real costs for the shared resource group `rg-hyf-data` in the Azure Portal and document what you find. This matches the hands-on section in Chapter 6 (Cost Awareness) — no Python SDK required.
+View real costs for the shared resource group `rg-hyf-data` in the Azure Portal and document what you find. This matches the hands-on section in Chapter 6 (Cost Awareness). No Python SDK required.
+
+> 🖼️ [Visual: what bills when idle](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/bcd40b4adef81347309c9b931a04098f/raw/idle_billing_visual.html)
+>
+> 🖼️ [Interactive: Week 6 cost calculator](https://htmlpreview.github.io/?https://gist.githubusercontent.com/lassebenni/77246bad2ca4dd06b061d2eb8af1454a/raw/azure_cost_calculator.html)
 
 ## Setup
 
