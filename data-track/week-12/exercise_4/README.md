@@ -32,7 +32,7 @@ Open `app.py`. Follow the `TODO` comments to:
 
 ## Stretch
 
-Calculate how many hours ago the last pickup was and display it as the `delta` parameter of `st.metric`. For example: "Last pickup: 2024-01-15 03:00 UTC — 14 h ago".
+Calculate how many hours ago the last pickup was and display it as the `delta` parameter of `st.metric`. For example: "Last pickup: 2024-01-15 03:00 UTC, 14 h ago".
 
 ## Solution
 

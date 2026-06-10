@@ -10,6 +10,6 @@
 
 ## Common issue: filter has no effect
 
-If the filter does not change the results, the most likely cause is that you forgot to map the filter to the Question's date column. Each Question has its own mapping — adding the filter to the dashboard is not enough.
+If the filter does not change the results, the most likely cause is that you forgot to map the filter to the Question's date column. Each Question has its own mapping, adding the filter to the dashboard is not enough.
 
 Check: enter edit mode → click the filter label → confirm both Question cards show the mapped column.

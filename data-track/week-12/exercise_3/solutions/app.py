@@ -15,10 +15,10 @@ AIRFLOW_PASS = os.environ["AIRFLOW_PASS"]
 
 @st.cache_data(ttl=60)
 def get_dag_runs(dag_id: str, limit: int = 10) -> list:
-    url = f"{AIRFLOW_URL}/api/v1/dags/{dag_id}/dagRuns"
+    url = f"{AIRFLOW_URL}/api/v2/dags/{dag_id}/dagRuns"
     r = requests.get(
         url,
-        params={"limit": limit, "order_by": "-execution_date"},
+        params={"limit": limit, "order_by": "-logical_date"},
         auth=(AIRFLOW_USER, AIRFLOW_PASS),
         timeout=10,
     )
@@ -36,9 +36,9 @@ if runs:
     last = runs[0]
     state = last["state"]
     if state == "success":
-        st.success(f"Last run: **{state}** — started {last['start_date']}")
+        st.success(f"Last run: **{state}**, started {last['start_date']}")
     elif state == "failed":
-        st.error(f"Last run: **{state}** — check Airflow logs")
+        st.error(f"Last run: **{state}**, check Airflow logs")
     else:
         st.warning(f"Last run: **{state}**")
 else:

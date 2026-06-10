@@ -28,7 +28,7 @@ The app should look like this when working:
 
 ```text
 ┌─────────────────────────────────────────┐
-│  Last run: success — started 2024-01-15 │
+│  Last run: success - started 2024-01-15 │
 └─────────────────────────────────────────┘
 ```
 
