@@ -20,7 +20,7 @@ streamlit run app.py
 
 Open `app.py`. Follow the `TODO` comments to:
 
-1. Implement `get_dag_runs(dag_id, limit)` using `requests.get` with Basic Auth.
+1. Implement `get_dag_runs(dag_id, limit)`: Airflow 3 uses token auth, so first `POST` to `/auth/token` for a JWT, then call `/api/v2/.../dagRuns` with an `Authorization: Bearer <token>` header.
 2. Call it with `dag_id = "ingest_taxi_month"` and `limit = 1`.
 3. Display the result as `st.success` (success), `st.error` (failed), or `st.warning` (other state).
 
