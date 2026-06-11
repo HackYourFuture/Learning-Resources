@@ -23,7 +23,9 @@ def get_dag_runs(dag_id: str, limit: int = 10) -> list:
     TODO: implement this function.
     Endpoint: GET {AIRFLOW_URL}/api/v2/dags/{dag_id}/dagRuns
     Params: limit=limit, order_by="-logical_date"
-    Auth: requests.get(..., auth=(AIRFLOW_USER, AIRFLOW_PASS))
+    Auth: Airflow 3 uses a token, not Basic Auth. First POST to
+    {AIRFLOW_URL}/auth/token with {"username":..., "password":...} to get
+    an access_token, then send headers={"Authorization": f"Bearer {token}"}.
     Return: response.json()["dag_runs"]
     """
     raise NotImplementedError("TODO: implement get_dag_runs")

@@ -15,6 +15,16 @@ load_dotenv()
 AIRFLOW_URL = os.environ["AIRFLOW_URL"]
 AIRFLOW_USER = os.environ["AIRFLOW_USER"]
 AIRFLOW_PASS = os.environ["AIRFLOW_PASS"]
+
+
+@st.cache_data(ttl=3000)  # Airflow 3 uses token auth; the token is valid for 24h
+def get_airflow_token() -> str:
+    r = requests.post(
+        f"{AIRFLOW_URL}/auth/token",
+        json={"username": AIRFLOW_USER, "password": AIRFLOW_PASS},
+    )
+    r.raise_for_status()
+    return r.json()["access_token"]
 PG_URL = os.environ["PG_URL"]
 PG_SCHEMA = os.environ.get("PG_SCHEMA", "dev_yourname")
 
@@ -25,7 +35,7 @@ def get_dag_runs(dag_id: str, limit: int = 10) -> list:
     r = requests.get(
         url,
         params={"limit": limit, "order_by": "-logical_date"},
-        auth=(AIRFLOW_USER, AIRFLOW_PASS),
+        headers={"Authorization": f"Bearer {get_airflow_token()}"},
         timeout=10,
     )
     r.raise_for_status()
