@@ -1,0 +1,14 @@
+-- Exercise 3: Find the busiest day with a CTE
+--
+-- Build a CTE that counts trips per calendar day, then query that CTE to find
+-- the single busiest day.
+--
+-- Question to answer: which date had the most pickups?
+--
+-- Dataset: raw_trips (~57K green-taxi rows, Jan 2024) and raw_zones (265 rows).
+-- Run this against your OWN schema on the shared Azure PostgreSQL, not public.
+--
+-- Hint: Use pickup_datetime::date to drop the time part. Define the daily counts
+--       in a WITH block, then ORDER BY ... DESC LIMIT 1 over the CTE.
+
+-- TODO: define a CTE of daily trip counts, then select the single busiest day from it.

@@ -1,0 +1,15 @@
+-- Exercise 1: Join trips to zone names
+--
+-- Each trip stores a pickup location as a number like 43, not a name.
+-- Join raw_trips to raw_zones so you can read the pickup zone name for each trip.
+--
+-- Show the pickup datetime, trip distance, fare amount, and the pickup zone
+-- name for the first 5 trips.
+--
+-- Dataset: raw_trips (~57K green-taxi rows, Jan 2024) and raw_zones (265 rows).
+-- Run this against your OWN schema on the shared Azure PostgreSQL, not public.
+--
+-- Hint: The bridge between the two tables is t.pickup_location_id = z.location_id.
+--       Use an INNER JOIN and LIMIT 5.
+
+-- TODO: select the four columns and join raw_trips to raw_zones, then limit to 5 rows.
