@@ -10,6 +10,8 @@
 -- Run this against your OWN schema on the shared Azure PostgreSQL, not public.
 --
 -- Hint: The bridge between the two tables is t.pickup_location_id = z.location_id.
---       Use an INNER JOIN and LIMIT 5.
+--       Use an INNER JOIN. Add ORDER BY t.pickup_datetime before LIMIT 5 so the
+--       five rows are the same every run (a bare LIMIT returns an arbitrary
+--       sample that can change between runs).
 
 -- TODO: select the four columns and join nyc_taxi.raw_trips to nyc_taxi.raw_zones, then limit to 5 rows.

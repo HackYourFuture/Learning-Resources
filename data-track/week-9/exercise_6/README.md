@@ -14,6 +14,8 @@ Open `exercise.sql` and run it against your own schema on the shared Azure Postg
 
 ## Success criteria
 
-After 6a, both views exist in your schema and can be queried. 6b returns the single highest-revenue borough, and 6c returns five pickup zones ranked by trip count.
+After 6a, both views exist in your schema and can be queried. 6b returns the single highest-revenue borough (Manhattan), and 6c returns five pickup zones ranked by trip count.
+
+> This practice view is deliberately scaled down. The assignment's `vw_fact_trips` also casts `pickup_datetime` to a `TIMESTAMP` (`pickup_datetime::TIMESTAMP`). Add that cast when you build the assignment version, or your fact view will not match the deliverable.
 
 Stuck? The reference queries are in `solutions/exercise.sql`, try for 10 to 20 minutes first.

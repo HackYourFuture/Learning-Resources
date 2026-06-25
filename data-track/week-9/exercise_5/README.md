@@ -14,6 +14,6 @@ Open `exercise.sql` and run each of the three queries against your own schema on
 
 ## Success criteria
 
-Each check returns a clear answer. For 5a you get a single count. For 5b and 5c, an empty result means the check passed: any rows returned are the problems to report.
+Each check returns a clear answer. For 5a you get a single count, and on this dataset that count is **0**: the pickup location IDs are complete. That is the point of the check, not a sign you wrote it wrong. The real issues live elsewhere: 5b surfaces duplicate trips, and the negative-fare and NULL `payment_type` problems show up in the chapter. For 5b and 5c, an empty result means the check passed: any rows returned are the problems to report. 5c also comes back empty here (every pickup ID resolves to a zone), which is the correct passing outcome, not a missed bug.
 
 Stuck? The reference queries are in `solutions/exercise.sql`, try for 10 to 20 minutes first.

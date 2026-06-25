@@ -10,6 +10,9 @@
 -- Dataset: nyc_taxi.raw_trips (~57K green-taxi rows, Jan 2024) and nyc_taxi.raw_zones (265 rows).
 -- Run these against your OWN schema on the shared Azure PostgreSQL, not public.
 -- NOTE: 6a creates views in YOUR OWN schema. CREATE OR REPLACE VIEW is safe to re-run.
+-- NOTE: this practice view is scaled down. The Week 9 assignment's vw_fact_trips
+--       also casts pickup_datetime to a TIMESTAMP (pickup_datetime::TIMESTAMP).
+--       Add that cast when you build the assignment version.
 --
 -- Hint: A view is a saved query: CREATE VIEW name AS SELECT ... The borough and
 --       zone names live in vw_dim_zones, so join

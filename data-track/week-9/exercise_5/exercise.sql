@@ -17,6 +17,8 @@
 
 -- 5a. Trips with a missing pickup location
 -- TODO: count rows where pickup_location_id IS NULL.
+--      Expect 0 here: the pickup IDs are complete. A 0 is the check passing,
+--      not a mistake. The real dirt is duplicates (5b) and negative fares.
 
 
 -- 5b. Duplicate trips (same vendor + pickup + dropoff time)
