@@ -2,7 +2,7 @@
 
 Seven SQL exercises that consolidate Week 9 (SQL for Analytics): joins, CTEs, aggregations, data validation, and building views. They are the runnable counterpart to the in-chapter practice. Run them against your own schema on the shared Azure PostgreSQL instance, not the shared `public` schema.
 
-The dataset is the same NYC Taxi data you used in the chapters: `raw_trips` (~57K green-taxi rides from January 2024) and `raw_zones` (265 location lookups).
+The dataset is the same NYC Taxi data you used in the chapters: `nyc_taxi.raw_trips` (~57K green-taxi rides from January 2024) and `nyc_taxi.raw_zones` (265 location lookups).
 
 ## Layout
 

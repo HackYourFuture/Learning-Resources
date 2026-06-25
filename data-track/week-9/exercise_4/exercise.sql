@@ -4,7 +4,7 @@
 -- Rewrite it using CTEs so each step is named and readable. The result must
 -- stay identical: the average fare per borough, for trips with a positive fare only.
 --
--- Dataset: raw_trips (~57K green-taxi rows, Jan 2024) and raw_zones (265 rows).
+-- Dataset: nyc_taxi.raw_trips (~57K green-taxi rows, Jan 2024) and nyc_taxi.raw_zones (265 rows).
 -- Run this against your OWN schema on the shared Azure PostgreSQL, not public.
 --
 -- Hint: Pull each subquery out into its own named step: one CTE to filter
@@ -20,10 +20,10 @@ FROM (
         t.fare_amount
     FROM (
         SELECT *
-        FROM raw_trips
+        FROM nyc_taxi.raw_trips
         WHERE fare_amount > 0
     ) t
-    INNER JOIN raw_zones z
+    INNER JOIN nyc_taxi.raw_zones z
         ON t.pickup_location_id = z.location_id
 ) joined
 GROUP BY borough

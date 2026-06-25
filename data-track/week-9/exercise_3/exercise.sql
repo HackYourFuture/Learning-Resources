@@ -5,7 +5,7 @@
 --
 -- Question to answer: which date had the most pickups?
 --
--- Dataset: raw_trips (~57K green-taxi rows, Jan 2024) and raw_zones (265 rows).
+-- Dataset: nyc_taxi.raw_trips (~57K green-taxi rows, Jan 2024) and nyc_taxi.raw_zones (265 rows).
 -- Run this against your OWN schema on the shared Azure PostgreSQL, not public.
 --
 -- Hint: Use pickup_datetime::date to drop the time part. Define the daily counts

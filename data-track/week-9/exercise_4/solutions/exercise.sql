@@ -2,7 +2,7 @@
 
 WITH positive_fares AS (       -- WHY first CTE: names the "filter" step; replaces the innermost subquery so the intent (keep positive fares) is obvious
     SELECT *
-    FROM raw_trips
+    FROM nyc_taxi.raw_trips
     WHERE fare_amount > 0
 ),
 joined AS (                    -- WHY second CTE: names the "join" step; it reads from the first CTE, so the steps chain in plain order
@@ -10,7 +10,7 @@ joined AS (                    -- WHY second CTE: names the "join" step; it read
         z.borough,
         t.fare_amount
     FROM positive_fares t
-    INNER JOIN raw_zones z
+    INNER JOIN nyc_taxi.raw_zones z
         ON t.pickup_location_id = z.location_id
 )
 SELECT

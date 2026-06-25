@@ -4,7 +4,7 @@
 
 You wrap the cleaned-up logic in two views, then query them. This is the star-schema deliverable the Week 9 assignment asks for, scaled down to practice it once:
 
-- 6a: create `vw_dim_zones` from `raw_zones` and `vw_fact_trips` from `raw_trips`, excluding rows where `fare_amount` is negative.
+- 6a: create `vw_dim_zones` from `nyc_taxi.raw_zones` and `vw_fact_trips` from `nyc_taxi.raw_trips`, excluding rows where `fare_amount` is negative.
 - 6b: using your views, find which borough had the highest total fare revenue.
 - 6c: using your views, find the top 5 pickup zones by trip count.
 

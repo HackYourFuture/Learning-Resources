@@ -6,7 +6,7 @@ You write three data-quality checks that the Week 9 assignment's audit task expe
 
 - 5a: count trips with a NULL `pickup_location_id`.
 - 5b: find duplicate trips, rows that share the same `vendor_id`, `pickup_datetime`, and `dropoff_datetime`.
-- 5c: find orphaned pickup IDs, `pickup_location_id` values that do not exist in `raw_zones`.
+- 5c: find orphaned pickup IDs, `pickup_location_id` values that do not exist in `nyc_taxi.raw_zones`.
 
 ## How to run
 

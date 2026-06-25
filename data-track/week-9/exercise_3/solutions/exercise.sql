@@ -4,7 +4,7 @@ WITH daily_trips AS (          -- WHY a CTE: it names the intermediate "trips pe
     SELECT
         t.pickup_datetime::date AS trip_date,  -- WHY ::date: casts the timestamp to a date, dropping the time so all rides on the same calendar day group together
         COUNT(*) AS trips
-    FROM raw_trips t
+    FROM nyc_taxi.raw_trips t
     GROUP BY t.pickup_datetime::date
 )
 SELECT

@@ -2,7 +2,7 @@
 
 ## What you do
 
-Each trip stores a pickup location as a number, not a name. You join `raw_trips` to `raw_zones` on the location ID so you can read the human-readable pickup zone name alongside the pickup datetime, trip distance, and fare amount for the first 5 trips.
+Each trip stores a pickup location as a number, not a name. You join `nyc_taxi.raw_trips` to `nyc_taxi.raw_zones` on the location ID so you can read the human-readable pickup zone name alongside the pickup datetime, trip distance, and fare amount for the first 5 trips.
 
 ## How to run
 

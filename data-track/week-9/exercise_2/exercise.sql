@@ -5,10 +5,10 @@
 --
 -- Question to answer: which borough has the most trips?
 --
--- Dataset: raw_trips (~57K green-taxi rows, Jan 2024) and raw_zones (265 rows).
+-- Dataset: nyc_taxi.raw_trips (~57K green-taxi rows, Jan 2024) and nyc_taxi.raw_zones (265 rows).
 -- Run this against your OWN schema on the shared Azure PostgreSQL, not public.
 --
--- Hint: Join to raw_zones to get borough, then GROUP BY z.borough. Every
+-- Hint: Join to nyc_taxi.raw_zones to get borough, then GROUP BY z.borough. Every
 --       non-aggregated column in the SELECT must appear in the GROUP BY.
 
--- TODO: join raw_trips to raw_zones, group by borough, and count trips plus average fare.
+-- TODO: join nyc_taxi.raw_trips to nyc_taxi.raw_zones, group by borough, and count trips plus average fare.

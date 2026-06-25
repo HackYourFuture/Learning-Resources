@@ -6,11 +6,11 @@ SELECT
     location_id,
     borough,
     zone
-FROM raw_zones;
+FROM nyc_taxi.raw_zones;
 
 CREATE OR REPLACE VIEW vw_fact_trips AS
 SELECT *
-FROM raw_trips
+FROM nyc_taxi.raw_trips
 WHERE fare_amount >= 0;       -- WHY filter in the view: the cleaning rule (no negative fares) lives in one place, so every query against the view is automatically clean
 
 

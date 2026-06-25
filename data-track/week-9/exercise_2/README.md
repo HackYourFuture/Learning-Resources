@@ -2,7 +2,7 @@
 
 ## What you do
 
-You aggregate the trips up to the borough level. After joining `raw_trips` to `raw_zones` to get the borough name, you count the trips and compute the average fare per pickup borough, then order the result so the busiest borough sits on top.
+You aggregate the trips up to the borough level. After joining `nyc_taxi.raw_trips` to `nyc_taxi.raw_zones` to get the borough name, you count the trips and compute the average fare per pickup borough, then order the result so the busiest borough sits on top.
 
 ## How to run
 
