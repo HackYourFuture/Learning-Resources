@@ -1,32 +1,29 @@
--- Exercise 6: Build views, then query them
+-- Exercise 5: Validate the raw data
 --
--- Wrap the cleaned-up logic in two views, then query them. This is exactly the
--- star-schema deliverable the assignment asks for, scaled down to practice once.
---   6a. Create vw_dim_zones from nyc_taxi.raw_zones and vw_fact_trips from nyc_taxi.raw_trips,
---       excluding rows where fare_amount is negative.
---   6b. Using your views, find which borough had the highest total fare revenue.
---   6c. Using your views, find the top 5 pickup zones by trip count.
+-- Raw data is rarely clean. Write three checks that the assignment's audit task
+-- expects you to run:
+--   5a. Count trips with a NULL pickup_location_id.
+--   5b. Find duplicate trips: rows that share the same vendor_id, pickup_datetime,
+--       and dropoff_datetime.
+--   5c. Find orphaned pickup IDs: pickup_location_id values in nyc_taxi.raw_trips that do
+--       not exist in nyc_taxi.raw_zones.
 --
 -- Dataset: nyc_taxi.raw_trips (~57K green-taxi rows, Jan 2024) and nyc_taxi.raw_zones (265 rows).
 -- Run these against your OWN schema on the shared Azure PostgreSQL, not public.
--- NOTE: 6a creates views in YOUR OWN schema. CREATE OR REPLACE VIEW is safe to re-run.
--- NOTE: this practice view is scaled down. The Week 9 assignment's vw_fact_trips
---       also casts pickup_datetime to a TIMESTAMP (pickup_datetime::TIMESTAMP).
---       Add that cast when you build the assignment version.
 --
--- Hint: A view is a saved query: CREATE VIEW name AS SELECT ... The borough and
---       zone names live in vw_dim_zones, so join
---       vw_fact_trips.pickup_location_id = vw_dim_zones.location_id for any
---       name-level breakdown.
+-- Hint: For duplicates, GROUP BY the three columns and keep groups with
+--       HAVING COUNT(*) > 1. For orphans, a LEFT JOIN to nyc_taxi.raw_zones with
+--       WHERE z.location_id IS NULL surfaces the unmatched IDs.
 
--- 6a. The two views
--- TODO: CREATE OR REPLACE VIEW vw_dim_zones from nyc_taxi.raw_zones.
--- TODO: CREATE OR REPLACE VIEW vw_fact_trips from nyc_taxi.raw_trips, excluding negative fares.
-
-
--- 6b. Highest total fare revenue by borough
--- TODO: join the two views, sum fare per borough, and return the top borough.
+-- 5a. Trips with a missing pickup location
+-- TODO: count rows where pickup_location_id IS NULL.
+--      Expect 0 here: the pickup IDs are complete. A 0 is the check passing,
+--      not a mistake. The real dirt is duplicates (5b) and negative fares.
 
 
--- 6c. Top 5 pickup zones by trip count
--- TODO: join the two views, count trips per zone, and return the top 5 zones.
+-- 5b. Duplicate trips (same vendor + pickup + dropoff time)
+-- TODO: group by the three columns and keep groups with more than one row.
+
+
+-- 5c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
+-- TODO: LEFT JOIN nyc_taxi.raw_trips to nyc_taxi.raw_zones and keep rows with no matching zone.

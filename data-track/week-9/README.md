@@ -1,6 +1,6 @@
 # HYF Data Track — Week 9 Practice Exercises
 
-Seven SQL exercises that consolidate Week 9 (SQL for Analytics): joins, CTEs, aggregations, data validation, and building views. They are the runnable counterpart to the in-chapter practice. Run them against your own schema on the shared Azure PostgreSQL instance, not the shared `public` schema.
+Eight SQL exercises that consolidate Week 9 (SQL for Analytics): joins, CTEs, aggregations, data validation, and building views. They are the runnable counterpart to the in-chapter practice. Run them against your own schema on the shared Azure PostgreSQL instance, not the shared `public` schema.
 
 The dataset is the same NYC Taxi data you used in the chapters: `nyc_taxi.raw_trips` (~57K green-taxi rides from January 2024) and `nyc_taxi.raw_zones` (265 location lookups).
 
@@ -12,9 +12,10 @@ The dataset is the same NYC Taxi data you used in the chapters: `nyc_taxi.raw_tr
 | `exercise_2` | Trips and average fare per borough | GROUP BY with COUNT and AVG |
 | `exercise_3` | Find the busiest day with a CTE | WITH block, then query the CTE |
 | `exercise_4` | Refactor a nested subquery into CTEs | Rewrite nested subqueries as named steps |
-| `exercise_5` | Validate the raw data | NULL checks, duplicate detection, orphan detection |
-| `exercise_6` | Build views, then query them | CREATE OR REPLACE VIEW and star-schema queries |
-| `exercise_7` | Compare a cartesian join to a filtered join | EXPLAIN and query plans |
+| `exercise_5` | Compare a cartesian join to a filtered join | EXPLAIN and query plans |
+| `exercise_6` | Validate the raw data | NULL checks, duplicate detection, orphan detection |
+| `exercise_7` | Build views, then query them | CREATE OR REPLACE VIEW and star-schema queries |
+| `exercise_8` | Detect and fix join fan-out | Spot double-counting, unique key checks, deduplication |
 
 ## Folder structure
 
@@ -30,7 +31,7 @@ week-9/
     README.md
     solutions/
       exercise.sql
-  ... (through exercise_7)
+  ... (through exercise_8)
 ```
 
 ## How to run

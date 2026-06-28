@@ -1,40 +1,31 @@
--- Exercise 6 solution: Build views, then query them
+-- Exercise 5 solution: Validate the raw data
 
--- 6a. The two views
-CREATE OR REPLACE VIEW vw_dim_zones AS  -- WHY CREATE OR REPLACE: lets you re-run this script while iterating without first DROPping the view; a plain CREATE VIEW would error if the view already exists
+-- 5a. Trips with a missing pickup location
+SELECT COUNT(*) AS null_pickup_location
+FROM nyc_taxi.raw_trips t
+WHERE t.pickup_location_id IS NULL;
+-- WHY IS NULL (not = NULL): in SQL, NULL is never equal to anything, even NULL.
+--   You must test for absence with IS NULL, not with = NULL, or the filter matches nothing.
+
+
+-- 5b. Duplicate trips (same vendor + pickup + dropoff time)
 SELECT
-    location_id,
-    borough,
-    zone
-FROM nyc_taxi.raw_zones;
-
-CREATE OR REPLACE VIEW vw_fact_trips AS
-SELECT *
-FROM nyc_taxi.raw_trips
-WHERE fare_amount >= 0;       -- WHY filter in the view: the cleaning rule (no negative fares) lives in one place, so every query against the view is automatically clean
-
-
--- 6b. Highest total fare revenue by borough
-SELECT
-    d.borough,
-    ROUND(SUM(f.fare_amount)::numeric, 2) AS total_revenue  -- WHY SUM: revenue is the total of all fares in the borough, not an average
-FROM vw_fact_trips f
-INNER JOIN vw_dim_zones d     -- WHY join to the dim view: borough names live in the dimension, not the fact, so we join to get the breakdown label
-    ON f.pickup_location_id = d.location_id
-GROUP BY d.borough
-ORDER BY total_revenue DESC
-LIMIT 1;                      -- WHY LIMIT 1: the question asks for the single highest-revenue borough
+    t.vendor_id,
+    t.pickup_datetime,
+    t.dropoff_datetime,
+    COUNT(*) AS copies
+FROM nyc_taxi.raw_trips t
+GROUP BY t.vendor_id, t.pickup_datetime, t.dropoff_datetime
+HAVING COUNT(*) > 1            -- WHY HAVING (not WHERE): WHERE filters individual rows before grouping; HAVING filters the GROUPS after aggregation. COUNT(*) only exists per group, so it must be tested in HAVING.
+ORDER BY copies DESC;
 
 
--- 6c. Top 5 pickup zones by trip count
-SELECT
-    d.zone,
-    COUNT(*) AS trips
-FROM vw_fact_trips f
-INNER JOIN vw_dim_zones d
-    ON f.pickup_location_id = d.location_id
-GROUP BY d.zone
-ORDER BY trips DESC
-LIMIT 5;                      -- WHY LIMIT 5: the question asks for the top 5 zones by trip count
+-- 5c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
+SELECT DISTINCT t.pickup_location_id
+FROM nyc_taxi.raw_trips t
+LEFT JOIN nyc_taxi.raw_zones z          -- WHY LEFT JOIN: keeps every trip even when no zone matches; an INNER JOIN would silently drop the unmatched (orphan) rows we are hunting for
+    ON t.pickup_location_id = z.location_id
+WHERE z.location_id IS NULL    -- WHY IS NULL here: after a LEFT JOIN, an unmatched trip has NULL zone columns; filtering on z.location_id IS NULL isolates exactly the orphans
+ORDER BY t.pickup_location_id;
 
--- Because these use CREATE OR REPLACE VIEW, you can re-run them safely while you iterate, without dropping the view first.
+-- An empty result for 5b or 5c means the check passed. Any rows returned are the problems to report.

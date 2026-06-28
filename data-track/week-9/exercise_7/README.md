@@ -1,15 +1,21 @@
-# Exercise 7 (stretch): Compare a cartesian join to a filtered join
+# Exercise 7: Build views, then query them
 
 ## What you do
 
-A forgotten join condition produces a cartesian product: every trip paired with every zone. You use `EXPLAIN` to see how the query planner treats two versions differently, the cartesian `CROSS JOIN` with no `ON` clause, and the filtered `INNER JOIN` on `pickup_location_id = location_id`, without actually running the expensive one. Then you compare the estimated row counts at the top node of each plan.
+You wrap the cleaned-up logic in two views, then query them. This is the star-schema deliverable the Week 9 assignment asks for, scaled down to practice it once:
+
+- 7a: create `vw_dim_zones` from `nyc_taxi.raw_zones` and `vw_fact_trips` from `nyc_taxi.raw_trips`, excluding rows where `fare_amount` is negative.
+- 7b: using your views, find which borough had the highest total fare revenue.
+- 7c: using your views, find the top 5 pickup zones by trip count.
 
 ## How to run
 
-Open `exercise.sql` and run both `EXPLAIN` queries against your own schema on the shared Azure PostgreSQL, using psql or any SQL client. `EXPLAIN` only prints the plan, it does not execute the query or modify any data.
+Open `exercise.sql` and run it against your own schema on the shared Azure PostgreSQL, using psql or any SQL client. Unlike the other exercises, 6a creates two views in your own schema. It uses `CREATE OR REPLACE VIEW`, so it is safe to re-run while you iterate. Steps 6b and 6c only read from those views.
 
 ## Success criteria
 
-The cartesian plan estimates roughly 57,000 times 265 rows (around 15 million) at its top node, while the filtered plan estimates about one matched zone per trip. That gap is why a forgotten `ON` clause can hang your session.
+After 7a, both views exist in your schema and can be queried. 7b returns the single highest-revenue borough (Manhattan), and 7c returns five pickup zones ranked by trip count.
+
+> This practice view is deliberately scaled down. The assignment's `vw_fact_trips` also casts `pickup_datetime` to a `TIMESTAMP` (`pickup_datetime::TIMESTAMP`). Add that cast when you build the assignment version, or your fact view will not match the deliverable.
 
 Stuck? The reference queries are in `solutions/exercise.sql`, try for 10 to 20 minutes first.

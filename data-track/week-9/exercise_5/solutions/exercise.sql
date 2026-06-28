@@ -1,31 +1,18 @@
--- Exercise 5 solution: Validate the raw data
+-- Exercise 7 solution (stretch): Compare a cartesian join to a filtered join
 
--- 5a. Trips with a missing pickup location
-SELECT COUNT(*) AS null_pickup_location
+-- Cartesian product: no join condition, ~57K trips x 265 zones
+EXPLAIN                        -- WHY EXPLAIN (not EXPLAIN ANALYZE): EXPLAIN only estimates and prints the plan; it never runs the query, so the ~15M-row cartesian product never actually materializes and cannot hang your session
+SELECT *
 FROM nyc_taxi.raw_trips t
-WHERE t.pickup_location_id IS NULL;
--- WHY IS NULL (not = NULL): in SQL, NULL is never equal to anything, even NULL.
---   You must test for absence with IS NULL, not with = NULL, or the filter matches nothing.
+CROSS JOIN nyc_taxi.raw_zones z;        -- WHY CROSS JOIN: with no ON clause the planner has no way to pair rows, so it produces every trip x every zone combination
 
 
--- 5b. Duplicate trips (same vendor + pickup + dropoff time)
-SELECT
-    t.vendor_id,
-    t.pickup_datetime,
-    t.dropoff_datetime,
-    COUNT(*) AS copies
+-- Filtered join: one zone per trip
+EXPLAIN
+SELECT *
 FROM nyc_taxi.raw_trips t
-GROUP BY t.vendor_id, t.pickup_datetime, t.dropoff_datetime
-HAVING COUNT(*) > 1            -- WHY HAVING (not WHERE): WHERE filters individual rows before grouping; HAVING filters the GROUPS after aggregation. COUNT(*) only exists per group, so it must be tested in HAVING.
-ORDER BY copies DESC;
+INNER JOIN nyc_taxi.raw_zones z
+    ON t.pickup_location_id = z.location_id;  -- WHY the ON clause matters: it tells the planner each trip matches exactly one zone, so the estimate collapses from millions to roughly the trip count
 
-
--- 5c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
-SELECT DISTINCT t.pickup_location_id
-FROM nyc_taxi.raw_trips t
-LEFT JOIN nyc_taxi.raw_zones z          -- WHY LEFT JOIN: keeps every trip even when no zone matches; an INNER JOIN would silently drop the unmatched (orphan) rows we are hunting for
-    ON t.pickup_location_id = z.location_id
-WHERE z.location_id IS NULL    -- WHY IS NULL here: after a LEFT JOIN, an unmatched trip has NULL zone columns; filtering on z.location_id IS NULL isolates exactly the orphans
-ORDER BY t.pickup_location_id;
-
--- An empty result for 5b or 5c means the check passed. Any rows returned are the problems to report.
+-- WHY this comparison teaches: the cartesian plan estimates roughly 57,000 x 265 (around 15 million),
+--   while the filtered plan estimates about one matched zone per trip. That gap is why a forgotten ON clause can hang your session.
