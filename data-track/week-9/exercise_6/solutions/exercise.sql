@@ -17,7 +17,7 @@ WHERE fare_amount >= 0;       -- WHY filter in the view: the cleaning rule (no n
 -- 6b. Highest total fare revenue by borough
 SELECT
     d.borough,
-    ROUND(SUM(f.fare_amount), 2) AS total_revenue  -- WHY SUM: revenue is the total of all fares in the borough, not an average
+    ROUND(SUM(f.fare_amount)::numeric, 2) AS total_revenue  -- WHY SUM: revenue is the total of all fares in the borough, not an average
 FROM vw_fact_trips f
 INNER JOIN vw_dim_zones d     -- WHY join to the dim view: borough names live in the dimension, not the fact, so we join to get the breakdown label
     ON f.pickup_location_id = d.location_id

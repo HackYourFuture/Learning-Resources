@@ -15,7 +15,7 @@ joined AS (                    -- WHY second CTE: names the "join" step; it read
 )
 SELECT
     borough,
-    ROUND(AVG(fare_amount), 2) AS avg_fare  -- WHY final SELECT only aggregates: the filtering and joining are already done, so this step does one thing
+    ROUND(AVG(fare_amount)::numeric, 2) AS avg_fare  -- WHY final SELECT only aggregates: the filtering and joining are already done, so this step does one thing
 FROM joined
 GROUP BY borough
 ORDER BY avg_fare DESC;

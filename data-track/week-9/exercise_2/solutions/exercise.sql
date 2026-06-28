@@ -3,7 +3,7 @@
 SELECT
     z.borough,
     COUNT(*) AS total_trips,            -- WHY COUNT(*): counts every row in the group, which is one row per trip, so this is the trip count per borough
-    ROUND(AVG(t.fare_amount), 2) AS avg_fare  -- WHY ROUND: AVG returns many decimal places; rounding to 2 keeps the fare readable as currency
+    ROUND(AVG(t.fare_amount)::numeric, 2) AS avg_fare  -- WHY ROUND: AVG returns many decimal places; rounding to 2 keeps the fare readable as currency
 FROM nyc_taxi.raw_trips t
 INNER JOIN nyc_taxi.raw_zones z
     ON t.pickup_location_id = z.location_id
