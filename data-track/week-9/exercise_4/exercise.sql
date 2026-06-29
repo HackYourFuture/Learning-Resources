@@ -13,7 +13,7 @@
 -- The messy original query to refactor:
 SELECT
     borough,
-    ROUND(AVG(fare_amount), 2) AS avg_fare
+    ROUND(AVG(fare_amount)::numeric, 2) AS avg_fare
 FROM (
     SELECT
         z.borough,
