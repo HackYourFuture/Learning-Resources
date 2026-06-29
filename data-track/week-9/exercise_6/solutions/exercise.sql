@@ -1,6 +1,6 @@
--- Exercise 5 solution: Validate the raw data
+-- Exercise 6 solution: Validate the raw data
 
--- 5a. Trips with a missing pickup location
+-- 6a. Trips with a missing pickup location
 SELECT COUNT(*) AS null_pickup_location
 FROM nyc_taxi.raw_trips t
 WHERE t.pickup_location_id IS NULL;
@@ -8,7 +8,7 @@ WHERE t.pickup_location_id IS NULL;
 --   You must test for absence with IS NULL, not with = NULL, or the filter matches nothing.
 
 
--- 5b. Duplicate trips (same vendor + pickup + dropoff time)
+-- 6b. Duplicate trips (same vendor + pickup + dropoff time)
 SELECT
     t.vendor_id,
     t.pickup_datetime,
@@ -20,7 +20,7 @@ HAVING COUNT(*) > 1            -- WHY HAVING (not WHERE): WHERE filters individu
 ORDER BY copies DESC;
 
 
--- 5c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
+-- 6c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
 SELECT DISTINCT t.pickup_location_id
 FROM nyc_taxi.raw_trips t
 LEFT JOIN nyc_taxi.raw_zones z          -- WHY LEFT JOIN: keeps every trip even when no zone matches; an INNER JOIN would silently drop the unmatched (orphan) rows we are hunting for
@@ -28,4 +28,4 @@ LEFT JOIN nyc_taxi.raw_zones z          -- WHY LEFT JOIN: keeps every trip even 
 WHERE z.location_id IS NULL    -- WHY IS NULL here: after a LEFT JOIN, an unmatched trip has NULL zone columns; filtering on z.location_id IS NULL isolates exactly the orphans
 ORDER BY t.pickup_location_id;
 
--- An empty result for 5b or 5c means the check passed. Any rows returned are the problems to report.
+-- Any rows returned for 6b or 6c are the problems to report.

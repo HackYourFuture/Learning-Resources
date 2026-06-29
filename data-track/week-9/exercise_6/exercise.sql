@@ -1,11 +1,11 @@
--- Exercise 5: Validate the raw data
+-- Exercise 6: Validate the raw data
 --
 -- Raw data is rarely clean. Write three checks that the assignment's audit task
 -- expects you to run:
---   5a. Count trips with a NULL pickup_location_id.
---   5b. Find duplicate trips: rows that share the same vendor_id, pickup_datetime,
+--   6a. Count trips with a NULL pickup_location_id.
+--   6b. Find duplicate trips: rows that share the same vendor_id, pickup_datetime,
 --       and dropoff_datetime.
---   5c. Find orphaned pickup IDs: pickup_location_id values in nyc_taxi.raw_trips that do
+--   6c. Find orphaned pickup IDs: pickup_location_id values in nyc_taxi.raw_trips that do
 --       not exist in nyc_taxi.raw_zones.
 --
 -- Dataset: nyc_taxi.raw_trips (~57K green-taxi rows, Jan 2024) and nyc_taxi.raw_zones (265 rows).
@@ -15,15 +15,15 @@
 --       HAVING COUNT(*) > 1. For orphans, a LEFT JOIN to nyc_taxi.raw_zones with
 --       WHERE z.location_id IS NULL surfaces the unmatched IDs.
 
--- 5a. Trips with a missing pickup location
+-- 6a. Trips with a missing pickup location
 -- TODO: count rows where pickup_location_id IS NULL.
---      Expect 0 here: the pickup IDs are complete. A 0 is the check passing,
---      not a mistake. The real dirt is duplicates (5b) and negative fares.
+--      Expect 5 here: some pickup IDs are intentionally NULL. The real dirt is
+--      duplicates (6b), negative fares, and orphans (6c).
 
 
--- 5b. Duplicate trips (same vendor + pickup + dropoff time)
+-- 6b. Duplicate trips (same vendor + pickup + dropoff time)
 -- TODO: group by the three columns and keep groups with more than one row.
 
 
--- 5c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
+-- 6c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
 -- TODO: LEFT JOIN nyc_taxi.raw_trips to nyc_taxi.raw_zones and keep rows with no matching zone.

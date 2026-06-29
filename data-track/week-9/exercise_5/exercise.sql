@@ -1,4 +1,4 @@
--- Exercise 7 (stretch): Compare a cartesian join to a filtered join
+-- Exercise 5 (stretch): Compare a cartesian join to a filtered join
 --
 -- A missing join condition produces a cartesian product: every trip matched to
 -- every zone. Use EXPLAIN to see how the planner treats the two queries

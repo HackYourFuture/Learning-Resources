@@ -1,4 +1,4 @@
--- Exercise 7 solution (stretch): Compare a cartesian join to a filtered join
+-- Exercise 5 solution (stretch): Compare a cartesian join to a filtered join
 
 -- Cartesian product: no join condition, ~57K trips x 265 zones
 EXPLAIN                        -- WHY EXPLAIN (not EXPLAIN ANALYZE): EXPLAIN only estimates and prints the plan; it never runs the query, so the ~15M-row cartesian product never actually materializes and cannot hang your session
