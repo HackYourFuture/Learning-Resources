@@ -19,11 +19,24 @@
 -- TODO: count rows where pickup_location_id IS NULL.
 --      Expect 5 here: some pickup IDs are intentionally NULL. The real dirt is
 --      duplicates (6b), negative fares, and orphans (6c).
+-- Starter skeleton:
+SELECT COUNT(*) FROM nyc_taxi.raw_trips WHERE 1=0; -- replace 1=0 with filter
 
 
 -- 6b. Duplicate trips (same vendor + pickup + dropoff time)
 -- TODO: group by the three columns and keep groups with more than one row.
+-- Starter skeleton:
+SELECT vendor_id, pickup_datetime, dropoff_datetime, COUNT(*)
+FROM nyc_taxi.raw_trips
+GROUP BY 1, 2, 3
+LIMIT 1; -- replace LIMIT with HAVING count filter
 
 
 -- 6c. Orphaned pickup IDs not present in nyc_taxi.raw_zones
 -- TODO: LEFT JOIN nyc_taxi.raw_trips to nyc_taxi.raw_zones and keep rows with no matching zone.
+-- Starter skeleton:
+SELECT DISTINCT t.pickup_location_id
+FROM nyc_taxi.raw_trips t
+LEFT JOIN nyc_taxi.raw_zones z ON t.pickup_location_id = z.location_id
+LIMIT 1; -- replace LIMIT with WHERE clause to find unmatched zones
+

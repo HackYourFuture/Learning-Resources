@@ -11,4 +11,11 @@
 -- Hint: Use pickup_datetime::date to drop the time part. Define the daily counts
 --       in a WITH block, then ORDER BY ... DESC LIMIT 1 over the CTE.
 
--- TODO: define a CTE of daily trip counts, then select the single busiest day from it.
+-- Starter query: counting trips per day without a CTE
+SELECT t.pickup_datetime::date AS trip_date, COUNT(*) AS trips
+FROM nyc_taxi.raw_trips t
+GROUP BY trip_date
+ORDER BY trips DESC
+LIMIT 5;
+
+-- TODO: rewrite the query above to use a CTE (WITH block) containing the daily counts, and select the single busiest day from the CTE.

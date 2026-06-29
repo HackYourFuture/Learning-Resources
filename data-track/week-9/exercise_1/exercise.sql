@@ -14,4 +14,10 @@
 --       five rows are the same every run (a bare LIMIT returns an arbitrary
 --       sample that can change between runs).
 
--- TODO: select the four columns and join nyc_taxi.raw_trips to nyc_taxi.raw_zones, then limit to 5 rows.
+-- Starter query: exploring raw_trips columns
+SELECT pickup_datetime, trip_distance, fare_amount, pickup_location_id
+FROM nyc_taxi.raw_trips
+ORDER BY pickup_datetime
+LIMIT 5;
+
+-- TODO: rewrite the query above to join nyc_taxi.raw_trips to nyc_taxi.raw_zones on pickup_location_id = location_id and select the zone name instead of the ID.

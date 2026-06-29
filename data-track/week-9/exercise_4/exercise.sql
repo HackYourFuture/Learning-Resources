@@ -29,4 +29,14 @@ FROM (
 GROUP BY borough
 ORDER BY avg_fare DESC;
 
--- TODO: rewrite the query above using CTEs (one to filter, one to join, then aggregate).
+-- Starter skeleton: refactoring into CTEs
+WITH positive_trips AS (
+    -- TODO: select trips where fare_amount > 0 from nyc_taxi.raw_trips
+    SELECT * FROM nyc_taxi.raw_trips LIMIT 1
+),
+joined_trips AS (
+    -- TODO: join positive_trips to nyc_taxi.raw_zones
+    SELECT * FROM positive_trips
+)
+-- TODO: final group by and aggregate over joined_trips
+SELECT 1;

@@ -22,11 +22,30 @@
 -- 7a. The two views
 -- TODO: CREATE OR REPLACE VIEW vw_dim_zones from nyc_taxi.raw_zones.
 -- TODO: CREATE OR REPLACE VIEW vw_fact_trips from nyc_taxi.raw_trips, excluding negative fares.
+-- Starter skeletons:
+CREATE OR REPLACE VIEW vw_dim_zones AS
+SELECT 1; -- replace with columns from raw_zones
+
+CREATE OR REPLACE VIEW vw_fact_trips AS
+SELECT 1; -- replace with columns from raw_trips and filter negative fares
 
 
 -- 7b. Highest total fare revenue by borough
 -- TODO: join the two views, sum fare per borough, and return the top borough.
+-- Starter skeleton:
+SELECT d.borough, SUM(f.fare_amount) AS total_revenue
+FROM vw_fact_trips f
+INNER JOIN vw_dim_zones d ON f.pickup_location_id = d.location_id
+GROUP BY 1
+LIMIT 1; -- replace with correct ORDER BY and final touches
 
 
 -- 7c. Top 5 pickup zones by trip count
 -- TODO: join the two views, count trips per zone, and return the top 5 zones.
+-- Starter skeleton:
+SELECT d.zone, COUNT(*) AS trips
+FROM vw_fact_trips f
+INNER JOIN vw_dim_zones d ON f.pickup_location_id = d.location_id
+GROUP BY 1
+LIMIT 5; -- replace with correct ORDER BY and final touches
+

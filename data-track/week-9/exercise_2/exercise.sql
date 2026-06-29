@@ -11,4 +11,11 @@
 -- Hint: Join to nyc_taxi.raw_zones to get borough, then GROUP BY z.borough. Every
 --       non-aggregated column in the SELECT must appear in the GROUP BY.
 
--- TODO: join nyc_taxi.raw_trips to nyc_taxi.raw_zones, group by borough, and count trips plus average fare.
+-- Starter query: counting raw trips by location ID (no join)
+SELECT t.pickup_location_id, COUNT(*) AS trips, AVG(t.fare_amount) AS avg_fare
+FROM nyc_taxi.raw_trips t
+GROUP BY t.pickup_location_id
+ORDER BY trips DESC
+LIMIT 5;
+
+-- TODO: rewrite the query above to join to nyc_taxi.raw_zones, group by the borough name, and order by total trips descending.
