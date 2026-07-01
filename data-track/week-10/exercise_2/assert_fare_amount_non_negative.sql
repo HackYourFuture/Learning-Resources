@@ -1,0 +1,20 @@
+-- Exercise 2: Write a singular test
+--
+-- Create this file at tests/assert_fare_amount_non_negative.sql in your dbt project.
+--
+-- A singular test is a plain SELECT that returns the *bad* rows.
+-- dbt runs this query and reports FAIL if any rows are returned, PASS if zero rows come back.
+--
+-- Your task: write a SELECT against {{ ref('stg_trips') }} that returns every row
+-- where fare_amount is negative.
+--
+-- Expected result when you run `dbt test --select test_type:singular`:
+--   PASS (because stg_trips already filters fare_amount >= 0)
+--
+-- Before completing the TODO, first temporarily comment out the WHERE fare_amount >= 0
+-- filter in stg_trips.sql and re-run dbt run --select stg_trips + dbt test --select test_type:singular
+-- to confirm the test correctly reports FAIL 182 against the unfiltered data.
+-- Then restore the filter and confirm the test goes back to PASS.
+
+-- TODO: write the singular test SELECT here.
+-- Replace this comment with: SELECT * FROM {{ ref('stg_trips') }} WHERE ...
