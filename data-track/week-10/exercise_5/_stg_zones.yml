@@ -1,0 +1,18 @@
+version: 2
+
+# Exercise 5: add the four generic tests (part 1 of 2).
+# Copy this to models/staging/_stg_zones.yml, or merge the tests into the file
+# you already created in the dbt Tests hands-on.
+
+models:
+  - name: stg_zones
+    description: One row per TLC taxi zone.
+    columns:
+      - name: location_id
+        description: TLC zone ID (primary key of the zone dimension).
+        # TODO 1: add `unique` and `not_null` tests on location_id.
+        #   It is the zone dimension's primary key and the target of the
+        #   relationships test in _stg_trips.yml, so it must be a clean key first.
+
+      - name: borough
+        description: NYC borough.

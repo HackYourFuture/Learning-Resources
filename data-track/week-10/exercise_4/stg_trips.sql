@@ -7,13 +7,12 @@
 
 SELECT
     -- identifiers
-    vendorid,
-    lpep_pickup_datetime                                AS pickup_datetime,
-    lpep_dropoff_datetime                               AS dropoff_datetime,
+    pickup_datetime,
+    dropoff_datetime,
 
     -- location keys
-    pulocationid                                        AS pickup_location_id,
-    dolocationid                                        AS dropoff_location_id,
+    pickup_location_id,
+    dropoff_location_id,
 
     -- trip facts
     trip_distance,

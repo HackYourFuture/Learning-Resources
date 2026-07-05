@@ -1,6 +1,6 @@
 # HYF Data Track — Week 10 Practice Exercises
 
-Four exercises that consolidate Week 10 (dbt Core: SQL transformations as a tested, documented, version-controlled project). Each exercise targets one skill from the content chapters. Work through them in order: Exercise 1 is a prerequisite for the `fct_trips` mart, and later exercises assume the project state from Exercises 1–3.
+Five exercises that consolidate Week 10 (dbt Core: SQL transformations as a tested, documented, version-controlled project). Each exercise targets one skill from the content chapters. Work through them in order: Exercise 1 is a prerequisite for the `fct_trips` mart, and later exercises assume the project state from Exercises 1–3.
 
 These exercises require your Week 10 dbt project (set up in Chapter 2) running against the shared Azure PostgreSQL instance. They are not standalone: you copy the provided SQL files into your project and run dbt commands.
 
@@ -12,6 +12,7 @@ These exercises require your Week 10 dbt project (set up in Chapter 2) running a
 | `exercise_2` | Write and run a singular test | `dbt test --select test_type:singular` |
 | `exercise_3` | Debug a broken `ref()` | `dbt compile --select fct_trips` |
 | `exercise_4` | Propagate a column change from staging to mart | `dbt run --select +fct_trips` |
+| `exercise_5` | Add the four generic tests (`not_null`, `unique`, `accepted_values`, `relationships`) | `dbt test --select stg_trips stg_zones` |
 
 ## Folder structure
 
@@ -41,6 +42,13 @@ week-10/
     solutions/
       stg_trips.sql
       fct_trips.sql
+  exercise_5/
+    _stg_zones.yml        -- copy to models/staging/_stg_zones.yml
+    _stg_trips.yml        -- copy to models/staging/_stg_trips.yml
+    README.md
+    solutions/
+      _stg_zones.yml
+      _stg_trips.yml
 ```
 
 ## How to run

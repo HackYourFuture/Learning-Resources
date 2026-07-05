@@ -1,11 +1,10 @@
 -- Exercise 4 solution: stg_trips with trip_duration_minutes
 
 SELECT
-    vendorid,
-    lpep_pickup_datetime                                AS pickup_datetime,
-    lpep_dropoff_datetime                               AS dropoff_datetime,
-    pulocationid                                        AS pickup_location_id,
-    dolocationid                                        AS dropoff_location_id,
+    pickup_datetime,
+    dropoff_datetime,
+    pickup_location_id,
+    dropoff_location_id,
     trip_distance,
     fare_amount,
     tip_amount,

@@ -15,7 +15,7 @@
 
 WITH trips AS (
     SELECT *
-    FROM {{ ref('stg_trps') }}  -- typo is here
+    FROM {{ ref('stg_trps') }}
 ),
 
 zones AS (

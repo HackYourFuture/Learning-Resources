@@ -11,13 +11,12 @@
 
 SELECT
     -- identifiers
-    vendorid,
-    lpep_pickup_datetime                                AS pickup_datetime,
-    lpep_dropoff_datetime                               AS dropoff_datetime,
+    pickup_datetime,
+    dropoff_datetime,
 
-    -- location keys (used as join keys in fct_trips — keep as integers)
-    pulocationid                                        AS pickup_location_id,
-    dolocationid                                        AS dropoff_location_id,
+    -- location keys (used as join keys in fct_trips)
+    pickup_location_id,
+    dropoff_location_id,
 
     -- trip facts
     trip_distance,

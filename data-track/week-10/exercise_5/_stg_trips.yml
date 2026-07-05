@@ -1,0 +1,30 @@
+version: 2
+
+# Exercise 5: add the four generic tests (part 2 of 2).
+# Copy this to models/staging/_stg_trips.yml, or merge the tests into the file
+# you already created in the dbt Tests hands-on.
+
+models:
+  - name: stg_trips
+    description: Cleaned green taxi trips, one row per trip.
+    columns:
+      - name: pickup_location_id
+        description: TLC zone ID where the trip started (join key into stg_zones).
+        # TODO 2: add `not_null`.
+        # TODO 4: add a `relationships` test asserting every pickup_location_id
+        #   exists as a location_id in stg_zones:
+        #     - relationships:
+        #         to: ref('stg_zones')
+        #         field: location_id
+        #   Run `dbt test --select stg_trips stg_zones`. This test FAILS: some trips
+        #   carry a pickup_location_id with no matching zone (a real source-data gap,
+        #   not a bug). Then add `severity: warn` so the known gap warns instead of
+        #   blocking the build, and re-run to confirm it reports WARN.
+
+      - name: fare_amount
+        description: Total fare in USD.
+        # TODO 3a: add `not_null`.
+
+      - name: payment_type
+        description: TLC payment code (1-6).
+        # TODO 3b: add `accepted_values` with values: [1, 2, 3, 4, 5, 6].
