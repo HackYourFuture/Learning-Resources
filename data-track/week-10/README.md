@@ -1,62 +1,24 @@
-# HYF Data Track — Week 10 Practice Exercises
+# HYF Data Track — Week 10 Practice
 
-Five exercises that consolidate Week 10 (dbt Core: SQL transformations as a tested, documented, version-controlled project). Each exercise targets one skill from the content chapters. Work through them in order: Exercise 1 is a prerequisite for the `fct_trips` mart, and later exercises assume the project state from Exercises 1–3.
+The Week 10 dbt drills no longer live here. They were loose SQL files with no dbt project around them, so they could not actually be run: you had to mentally graft them into your own project. They now live as **branches in the Week 10 reference repo**, each starting from the finished project so `dbt compile` and `dbt build` work for real.
 
-These exercises require your Week 10 dbt project (set up in Chapter 2) running against the shared Azure PostgreSQL instance. They are not standalone: you copy the provided SQL files into your project and run dbt commands.
+## Where they went
 
-## Layout
+Clone the reference repo once, then `git switch` to an exercise branch and follow its `EXERCISE.md`. Compare your work against the matching `-solution` branch.
 
-| Folder | Skill | dbt command to verify |
-|--------|-------|----------------------|
-| `exercise_1` | Macros and computed columns for `stg_trips` | `dbt run --select stg_trips` |
-| `exercise_2` | Write and run a singular test | `dbt test --select test_type:singular` |
-| `exercise_3` | Debug a broken `ref()` | `dbt compile --select fct_trips` |
-| `exercise_4` | Propagate a column change from staging to mart | `dbt run --select +fct_trips` |
-| `exercise_5` | Add the four generic tests (`not_null`, `unique`, `accepted_values`, `relationships`) | `dbt test --select stg_trips stg_zones` |
-
-## Folder structure
-
-```text
-week-10/
-  exercise_1/
-    safe_divide.sql     -- copy to macros/safe_divide.sql
-    stg_trips.sql       -- copy to models/staging/stg_trips.sql
-    README.md
-    solutions/
-      safe_divide.sql
-      stg_trips.sql
-  exercise_2/
-    assert_fare_amount_non_negative.sql  -- copy to tests/
-    README.md
-    solutions/
-      assert_fare_amount_non_negative.sql
-  exercise_3/
-    fct_trips_broken.sql  -- copy to models/marts/fct_trips.sql (overwrites)
-    README.md
-    solutions/
-      fct_trips.sql
-  exercise_4/
-    stg_trips.sql         -- copy to models/staging/stg_trips.sql
-    fct_trips.sql         -- copy to models/marts/fct_trips.sql
-    README.md
-    solutions/
-      stg_trips.sql
-      fct_trips.sql
-  exercise_5/
-    _stg_zones.yml        -- copy to models/staging/_stg_zones.yml
-    _stg_trips.yml        -- copy to models/staging/_stg_trips.yml
-    README.md
-    solutions/
-      _stg_zones.yml
-      _stg_trips.yml
+```bash
+git clone https://github.com/lassebenni/nyc-taxi-dbt-reference.git nyc_taxi
+cd nyc_taxi
+cp profiles.yml.example profiles.yml   # set your personal Week 9 login + schema
+git switch exercise-macros             # then read EXERCISE.md
 ```
 
-## How to run
+| Exercise | Start branch | Solution branch |
+| --- | --- | --- |
+| Macros and computed columns (`safe_divide`) | [`exercise-macros`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-macros) | [`exercise-macros-solution`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-macros-solution) |
+| Write a singular test | [`exercise-singular-test`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-singular-test) | [`exercise-singular-test-solution`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-singular-test-solution) |
+| Debug a broken `ref()` | [`exercise-debug-ref`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-debug-ref) | [`exercise-debug-ref-solution`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-debug-ref-solution) |
+| Propagate a column change | [`exercise-column-propagation`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-column-propagation) | [`exercise-column-propagation-solution`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-column-propagation-solution) |
+| Add the four generic tests | [`exercise-generic-tests`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-generic-tests) | [`exercise-generic-tests-solution`](https://github.com/lassebenni/nyc-taxi-dbt-reference/tree/exercise-generic-tests-solution) |
 
-These are dbt model, macro, and test files. Copy each file to the path shown in the exercise README, then run the dbt command shown in the table above. You need your Week 10 dbt project connected to the shared Azure PostgreSQL and `PG_PASSWORD` set in your environment.
-
-No `requirements.txt` is needed here: your dbt project already has `dbt-core` and `dbt-postgres` installed from Chapter 2.
-
-## Reference solutions and spoiler discipline
-
-Each `exercise_N/solutions/` folder holds the answer with `-- WHY` comments explaining the non-obvious choices. Time-box yourself to 15–20 minutes on each exercise before peeking. When you do open a solution, read the WHY notes: the reasoning is the teaching content.
+Each branch is independent (all start from the complete project), so you can do them in any order. The full walkthrough for each is in the Week 10 Practice chapter of the Data Track curriculum.
