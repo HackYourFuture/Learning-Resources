@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delta mini-sim: Parquet + transaction log</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px;
+    font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #c9d1d9;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 980px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+  }
+  .titlebar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 14px; background: #0d1117; border-bottom: 1px solid #21262d;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+  .title { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: #8b949e; margin-right: auto; }
+  .mode {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px; border: 1px solid;
+  }
+  .mode.parquet { color: #ffa657; border-color: rgba(255,166,87,0.45); background: rgba(255,166,87,0.1); }
+  .mode.delta { color: #3fb950; border-color: rgba(63,185,80,0.45); background: rgba(63,185,80,0.1); }
+
+  .controls {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    padding: 10px 14px; border-bottom: 1px solid #21262d; background: #0d1117;
+  }
+  .controls button {
+    appearance: none; border: 1px solid #30363d; background: #21262d; color: #f0f6fc;
+    font: inherit; font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 8px; cursor: pointer;
+  }
+  .controls button:hover { border-color: #58a6ff; }
+  .controls button:disabled { opacity: 0.4; cursor: default; }
+  .controls button.primary { background: #1f6feb; border-color: #1f6feb; }
+  .step-pill {
+    font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: #8b949e; margin-left: auto;
+  }
+
+  .stage {
+    display: grid; grid-template-columns: 1.15fr auto 0.95fr; gap: 12px;
+    padding: 14px; align-items: stretch;
+  }
+  @media (max-width: 720px) {
+    .stage { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); padding-top: 0; }
+  }
+
+  .panel {
+    background: #0d1117; border: 1px solid #30363d; border-radius: 8px; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .panel h3 {
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #8b949e;
+    padding: 8px 12px; border-bottom: 1px solid #21262d; background: #161b22;
+  }
+  .panel-body { padding: 10px 12px; flex: 1; }
+
+  .folder-path {
+    font-family: 'SF Mono', Menlo, monospace; font-size: 11px; color: #8b949e;
+    margin-bottom: 10px;
+  }
+  .folder-path strong { color: #79c0ff; font-weight: 600; }
+
+  .tree { list-style: none; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+  .tree li {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; margin-bottom: 4px; border-radius: 6px;
+    border: 1px solid transparent; transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+  }
+  .tree li.ok { background: rgba(63,185,80,0.08); border-color: rgba(63,185,80,0.25); }
+  .tree li.writing {
+    background: rgba(255,166,87,0.12); border-color: rgba(255,166,87,0.4);
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+  .tree li.orphan { background: rgba(139,148,158,0.12); border-color: rgba(139,148,158,0.35); opacity: 0.75; }
+  .tree li.log { background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.35); }
+  .tree li.dim { opacity: 0.35; }
+  .icon { width: 16px; text-align: center; flex-shrink: 0; }
+  .name { flex: 1; color: #f0f6fc; }
+  .meta { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .meta.ok { color: #3fb950; }
+  .meta.writing { color: #ffa657; }
+  .meta.orphan { color: #8b949e; }
+  .meta.log { color: #58a6ff; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,166,87,0.0); }
+    50% { box-shadow: 0 0 0 3px rgba(255,166,87,0.18); }
+  }
+
+  .arrow {
+    align-self: center; color: #58a6ff; font-size: 22px; font-weight: 700;
+  }
+
+  .dash-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 3px 8px; border-radius: 999px; margin-bottom: 10px; border: 1px solid;
+  }
+  .dash-status.safe { color: #3fb950; border-color: rgba(63,185,80,0.4); background: rgba(63,185,80,0.1); }
+  .dash-status.broken { color: #f85149; border-color: rgba(248,81,73,0.45); background: rgba(248,81,73,0.12); }
+  .dash-status.wait { color: #ffa657; border-color: rgba(255,166,87,0.4); background: rgba(255,166,87,0.1); }
+
+  table { width: 100%; border-collapse: collapse; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #21262d; }
+  th { color: #8b949e; font-weight: 600; }
+  tr.half td { color: #ffa198; }
+  tr.half { background: rgba(248,81,73,0.12); }
+  tr.good { background: rgba(63,185,80,0.1); }
+  .hint {
+    margin-top: 10px; font-size: 12px; line-height: 1.4; color: #8b949e;
+  }
+  .hint strong { color: #f0f6fc; }
+
+  .powers {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;
+  }
+  .power {
+    font-size: 11px; padding: 8px 10px; border-radius: 6px;
+    border: 1px solid #30363d; background: #161b22; color: #c9d1d9;
+  }
+  .power.on { border-color: rgba(63,185,80,0.4); background: rgba(63,185,80,0.1); color: #3fb950; }
+  .power.off { opacity: 0.45; }
+  .power strong { display: block; font-size: 12px; margin-bottom: 2px; color: inherit; }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; padding: 0 14px 10px;
+    font-size: 12px; color: #8b949e;
+  }
+  .legend span::before {
+    content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+    margin-right: 6px; vertical-align: -1px;
+  }
+  .legend .l-ok::before { background: #3fb950; }
+  .legend .l-writing::before { background: #ffa657; }
+  .legend .l-orphan::before { background: #8b949e; }
+  .legend .l-log::before { background: #58a6ff; }
+
+  .dock {
+    border-top: 1px solid #30363d; padding: 12px 16px; background: #161b22; min-height: 78px;
+  }
+  .dock-kicker {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: #8b949e; margin-bottom: 4px;
+  }
+  .dock-body { font-size: 13px; line-height: 1.45; color: #f0f6fc; }
+  .dock-body strong { color: #ffa657; }
+  .dock-body code {
+    font-family: 'SF Mono', Menlo, monospace; font-size: 12px;
+    background: #0d1117; padding: 1px 5px; border-radius: 4px; color: #79c0ff;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="titlebar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="title">Delta mini-sim · Parquet files + transaction log</span>
+      <span class="mode parquet" id="mode-badge">Plain Parquet</span>
+    </div>
+
+    <div class="controls">
+      <button type="button" id="btn-prev" disabled>← Back</button>
+      <button type="button" id="btn-next" class="primary">Next →</button>
+      <button type="button" id="btn-reset">Reset</button>
+      <span class="step-pill" id="step-pill">Step 1 / 7</span>
+    </div>
+
+    <div class="stage">
+      <div class="panel">
+        <h3>On ADLS (the folder)</h3>
+        <div class="panel-body">
+          <div class="folder-path">abfss://…/<strong>trips/</strong></div>
+          <ul class="tree" id="tree"></ul>
+        </div>
+      </div>
+      <div class="arrow" aria-hidden="true">⟶</div>
+      <div class="panel">
+        <h3>Dashboard query</h3>
+        <div class="panel-body">
+          <div class="dash-status safe" id="dash-status">Consistent</div>
+          <table>
+            <thead><tr><th>day</th><th>trips seen</th></tr></thead>
+            <tbody id="dash-rows"></tbody>
+          </table>
+          <div class="hint" id="dash-hint"></div>
+          <div class="powers" id="powers" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span class="l-ok">Committed / readable</span>
+      <span class="l-writing">Write in progress</span>
+      <span class="l-orphan">On disk, not in log</span>
+      <span class="l-log">Transaction log</span>
+    </div>
+
+    <div class="dock">
+      <div class="dock-kicker">Say this out loud</div>
+      <div class="dock-body" id="say"></div>
+    </div>
+  </div>
+
+  <script>
+    const treeEl = document.getElementById('tree');
+    const dashRows = document.getElementById('dash-rows');
+    const dashStatus = document.getElementById('dash-status');
+    const dashHint = document.getElementById('dash-hint');
+    const powersEl = document.getElementById('powers');
+    const sayEl = document.getElementById('say');
+    const stepPill = document.getElementById('step-pill');
+    const modeBadge = document.getElementById('mode-badge');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const btnReset = document.getElementById('btn-reset');
+
+    const F_JAN14 = { id: 'jan14', icon: '📄', name: 'part-00001-jan14.parquet', meta: 'ok', label: 'ok' };
+    const F_JAN15A = { id: 'jan15a', icon: '📄', name: 'part-00002-jan15.parquet', meta: 'ok', label: 'ok' };
+    const F_JAN15B_WRITING = { id: 'jan15b', icon: '📄', name: 'part-00003-jan15.parquet', meta: 'writing', label: 'writing' };
+    const F_JAN15B_ORPHAN = { id: 'jan15b', icon: '📄', name: 'part-00003-jan15.parquet', meta: 'orphan', label: 'not in log' };
+    const F_JAN15B_OK = { id: 'jan15b', icon: '📄', name: 'part-00003-jan15.parquet', meta: 'ok', label: 'ok' };
+    const LOG_V0 = { id: 'log0', icon: '📘', name: '_delta_log/000000.json', meta: 'log', label: 'v0 · Jan 14' };
+    const LOG_V1 = { id: 'log1', icon: '📘', name: '_delta_log/000001.json', meta: 'log', label: 'v1 · + Jan 15' };
+
+    const steps = [
+      {
+        title: 'A folder of files',
+        mode: 'parquet',
+        files: [F_JAN14],
+        dash: { status: 'safe', label: 'Consistent', rows: [{ day: '2024-01-14', trips: '48,210', cls: 'good' }], hint: 'Reader opens every <code>.parquet</code> under the path. Fine — until a write is in flight.' },
+        powers: null,
+        say: 'A lake path is just files. Cheap, scalable, but <strong>not a table</strong>: nobody tracks which files are finished, which are still being written.'
+      },
+      {
+        title: 'Nightly job starts Jan 15',
+        mode: 'parquet',
+        files: [F_JAN14, F_JAN15A, F_JAN15B_WRITING],
+        dash: { status: 'wait', label: 'Write in flight', rows: [{ day: '2024-01-14', trips: '48,210', cls: '' }, { day: '2024-01-15', trips: '?? partial', cls: 'half' }], hint: 'Job A is still appending <code>part-00003</code>. A second job could also write the same folder.' },
+        powers: null,
+        say: 'Two nightly jobs can hit the same folder. Mid-write, new Parquet parts appear on disk <strong>before</strong> the day is complete.'
+      },
+      {
+        title: 'Dashboard reads mid-write',
+        mode: 'parquet',
+        files: [F_JAN14, F_JAN15A, F_JAN15B_WRITING],
+        dash: { status: 'broken', label: 'Half of Jan 15', rows: [{ day: '2024-01-14', trips: '48,210', cls: '' }, { day: '2024-01-15', trips: '19,004 of ~52k', cls: 'half' }], hint: '<strong>Bug:</strong> the dashboard counted every file it found — including a half-written day.' },
+        powers: null,
+        say: 'With plain Parquet, “read the folder” = read whatever is there. The dashboard sees <strong>half of January 15</strong>. That is why a folder of files is not a table.'
+      },
+      {
+        title: 'Add the transaction log',
+        mode: 'delta',
+        files: [F_JAN14, LOG_V0],
+        dash: { status: 'safe', label: 'Reads via log', rows: [{ day: '2024-01-14', trips: '48,210', cls: 'good' }], hint: 'Delta = same Parquet bytes + <code>_delta_log/</code>. Readers trust the log, not a raw directory listing.' },
+        powers: null,
+        say: 'Delta Lake = <strong>Parquet + a transaction log</strong>. The log is an ordered record of which files belong to the table. That is the table layer.'
+      },
+      {
+        title: 'Write files first (not committed)',
+        mode: 'delta',
+        files: [F_JAN14, F_JAN15A, F_JAN15B_ORPHAN, LOG_V0],
+        dash: { status: 'safe', label: 'Still v0', rows: [{ day: '2024-01-14', trips: '48,210', cls: 'good' }], hint: 'New parts exist on disk, but <code>000000.json</code> still lists only Jan 14. Query stays on the last commit.' },
+        powers: null,
+        say: 'Writers can stage new Parquet files. Until a log entry commits them, readers keep the <strong>previous complete version</strong>. No half day.'
+      },
+      {
+        title: 'Atomic commit',
+        mode: 'delta',
+        files: [F_JAN14, F_JAN15A, F_JAN15B_OK, LOG_V0, LOG_V1],
+        dash: { status: 'safe', label: 'v1 committed', rows: [{ day: '2024-01-14', trips: '48,210', cls: '' }, { day: '2024-01-15', trips: '52,118', cls: 'good' }], hint: 'One log append makes the whole Jan 15 load visible at once. That is ACID for the lake.' },
+        powers: null,
+        say: 'Commit = append one log file. All-or-nothing: the dashboard either still sees yesterday, or the <strong>full</strong> January 15 load — never half.'
+      },
+      {
+        title: 'Same log, more powers',
+        mode: 'delta',
+        files: [F_JAN14, F_JAN15A, F_JAN15B_OK, LOG_V0, LOG_V1],
+        dash: { status: 'safe', label: 'Table guarantees', rows: [{ day: '2024-01-14', trips: '48,210', cls: '' }, { day: '2024-01-15', trips: '52,118', cls: 'good' }], hint: '' },
+        powers: [
+          { on: true, title: 'ACID', body: 'No mid-write reads' },
+          { on: true, title: 'Schema', body: 'Reject bad columns' },
+          { on: true, title: 'Time travel', body: 'Query v0 after a bad load' },
+          { on: true, title: 'MERGE', body: 'Ex D’s fast 2nd build' },
+        ],
+        say: 'One log unlocks schema checks, time travel, and atomic <code>MERGE</code> — the primitive that makes Ex D’s second <code>dbt build</code> fast. Plain Parquet has none of that.'
+      }
+    ];
+
+    let step = 0;
+
+    function renderTree(files) {
+      treeEl.innerHTML = '';
+      for (const f of files) {
+        const li = document.createElement('li');
+        li.className = f.meta;
+        li.innerHTML = `<span class="icon">${f.icon}</span><span class="name">${f.name}</span><span class="meta ${f.meta}">${f.label}</span>`;
+        treeEl.appendChild(li);
+      }
+    }
+
+    function renderDash(dash, powers) {
+      dashStatus.className = 'dash-status ' + dash.status;
+      dashStatus.textContent = dash.label;
+      dashRows.innerHTML = '';
+      for (const r of dash.rows) {
+        const tr = document.createElement('tr');
+        if (r.cls) tr.className = r.cls;
+        tr.innerHTML = `<td>${r.day}</td><td>${r.trips}</td>`;
+        dashRows.appendChild(tr);
+      }
+      if (powers) {
+        powersEl.hidden = false;
+        dashHint.innerHTML = '';
+        powersEl.innerHTML = powers.map(p =>
+          `<div class="power ${p.on ? 'on' : 'off'}"><strong>${p.title}</strong>${p.body}</div>`
+        ).join('');
+      } else {
+        powersEl.hidden = true;
+        powersEl.innerHTML = '';
+        dashHint.innerHTML = dash.hint;
+      }
+    }
+
+    function render() {
+      const s = steps[step];
+      renderTree(s.files);
+      renderDash(s.dash, s.powers);
+      sayEl.innerHTML = s.say;
+      stepPill.textContent = `Step ${step + 1} / ${steps.length} · ${s.title}`;
+      modeBadge.textContent = s.mode === 'delta' ? 'Delta table' : 'Plain Parquet';
+      modeBadge.className = 'mode ' + s.mode;
+      btnPrev.disabled = step === 0;
+      btnNext.disabled = step === steps.length - 1;
+      btnNext.textContent = step === steps.length - 1 ? 'Done' : 'Next →';
+    }
+
+    btnPrev.addEventListener('click', () => { if (step > 0) { step--; render(); } });
+    btnNext.addEventListener('click', () => { if (step < steps.length - 1) { step++; render(); } });
+    btnReset.addEventListener('click', () => { step = 0; render(); });
+    render();
+  </script>
+</body>
+</html>
