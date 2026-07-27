@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HYF YouTube chapter player (demo)</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a222c;
+      --text: #e7ecf1;
+      --muted: #9aa7b5;
+      --accent: #3d9cfd;
+      --accent-hover: #6bb3ff;
+      --border: #2a3542;
+      --active: #1e3a5f;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    .wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: 100vh;
+    }
+    @media (max-width: 720px) {
+      .wrap { grid-template-columns: 1fr; }
+    }
+    .player-shell {
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 16 / 9;
+      min-height: 220px;
+    }
+    #player { width: 100%; height: 100%; }
+    .chapters {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: min(70vh, 520px);
+      overflow: auto;
+    }
+    .chapters h1 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .hint {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chapter {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font: inherit;
+    }
+    .chapter:hover { border-color: var(--accent); color: var(--accent-hover); }
+    .chapter.active {
+      background: var(--active);
+      border-color: var(--accent);
+    }
+    .chapter .t {
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+      min-width: 3.2rem;
+      font-weight: 600;
+    }
+    .status {
+      margin-top: auto;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="player-shell">
+      <div id="player"></div>
+    </div>
+    <aside class="chapters" aria-label="Chapters">
+      <h1>Chapters</h1>
+      <p class="hint">Click a row to seek <em>this</em> player (same iframe). Demo video: Big Buck Bunny.</p>
+      <div id="chapter-list"></div>
+      <p class="status" id="status">Loading player…</p>
+    </aside>
+  </div>
+
+  <script>
+    // Demo defaults. Override with ?v=VIDEO_ID and optional ?chapters= base64url JSON.
+    // chapters JSON shape: [{ "t": 0, "label": "Start" }, ...]
+    const DEFAULT_VIDEO = "aqz-KE-bpKQ";
+    const DEFAULT_CHAPTERS = [
+      { t: 0, label: "Start" },
+      { t: 30, label: "Early beat (0:30)" },
+      { t: 90, label: "Mid (1:30)" },
+      { t: 150, label: "Later (2:30)" },
+      { t: 300, label: "Later still (5:00)" },
+    ];
+
+    function fmt(seconds) {
+      const s = Math.max(0, Math.floor(Number(seconds) || 0));
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const r = s % 60;
+      if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+      return `${m}:${String(r).padStart(2, "0")}`;
+    }
+
+    function parseParams() {
+      const q = new URLSearchParams(location.search);
+      const v = q.get("v") || DEFAULT_VIDEO;
+      let chapters = DEFAULT_CHAPTERS;
+      const raw = q.get("chapters");
+      if (raw) {
+        try {
+          const json = decodeURIComponent(escape(atob(raw.replace(/-/g, "+").replace(/_/g, "/"))));
+          const parsed = JSON.parse(json);
+          if (Array.isArray(parsed) && parsed.length) chapters = parsed;
+        } catch (e) {
+          console.warn("Invalid chapters param", e);
+        }
+      }
+      return { v, chapters };
+    }
+
+    const { v: videoId, chapters } = parseParams();
+    const listEl = document.getElementById("chapter-list");
+    const statusEl = document.getElementById("status");
+    let player = null;
+    let activeBtn = null;
+
+    chapters.forEach((ch, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chapter";
+      btn.dataset.t = String(ch.t);
+      btn.innerHTML = `<span class="t">${fmt(ch.t)}</span><span>${ch.label || "Chapter " + (i + 1)}</span>`;
+      btn.addEventListener("click", () => seekTo(ch.t, btn));
+      listEl.appendChild(btn);
+    });
+
+    function seekTo(seconds, btn) {
+      if (!player || typeof player.seekTo !== "function") {
+        statusEl.textContent = "Player not ready yet…";
+        return;
+      }
+      player.seekTo(seconds, true);
+      try { player.playVideo(); } catch (_) {}
+      if (activeBtn) activeBtn.classList.remove("active");
+      activeBtn = btn || [...listEl.querySelectorAll(".chapter")].find((b) => Number(b.dataset.t) === seconds) || null;
+      if (activeBtn) activeBtn.classList.add("active");
+      statusEl.textContent = `Seeked to ${fmt(seconds)} (in-page player)`;
+    }
+
+    // YouTube IFrame API
+    window.onYouTubeIframeAPIReady = function () {
+      player = new YT.Player("player", {
+        videoId,
+        playerVars: {
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => { statusEl.textContent = "Ready — click a chapter."; },
+          onError: (e) => { statusEl.textContent = "YouTube error " + e.data; },
+        },
+      });
+    };
+
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  </script>
+</body>
+</html>
