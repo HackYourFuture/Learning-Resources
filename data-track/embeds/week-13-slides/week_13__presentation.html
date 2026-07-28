@@ -1924,7 +1924,7 @@ section.iframe-bleed iframe {
 ;">
 <h2 id="%E2%9D%97-ch4-replace-your-databricks-token-action-required"><img class="emoji" draggable="false" alt="❗" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/2757.svg" data-marp-twemoji=""/> Ch4: Replace your Databricks token (action required)</h2>
 <p><strong>Step 1:</strong> Databricks → <strong>Settings</strong> → <strong>Developer</strong> → <strong>Access tokens</strong> → <strong>Generate new token</strong></p>
-<p><strong>Step 2:</strong> Copy <code>.env.example</code> to <code>.env</code> (gitignored). Paste your new token into <code>DATABRICKS_TOKEN</code>: use your own PAT, not the Key Vault secret.</p>
+<p><strong>Step 2:</strong> Copy <code>.env.example</code> to <code>.env</code> (gitignored). Paste your new token into <code>DATABRICKS_TOKEN</code>.</p>
 <p><strong>Step 3:</strong> Load <code>.env</code> and check who dbt connects as:</p>
 <pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-bash"><span class="hljs-built_in">source</span> .<span class="hljs-built_in">env</span>
 dbt show --inline <span class="hljs-string">&quot;select session_user() as connected_as&quot;</span>
