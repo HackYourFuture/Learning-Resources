@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>bicep.yml</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #0d1117;
+    font-family: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+    display: flex;
+    flex-direction: column;
+  }
+  .bar {
+    flex: 0 0 auto;
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bar .name { color: #8b949e; font-size: 12px; flex: 1; }
+  .bar button {
+    background: #1f6feb;
+    color: #fff;
+    border: 0;
+    border-radius: 4px;
+    padding: 4px 11px;
+    font-family: inherit;
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .bar button:active { background: #1a5fd0; }
+  .bar .done { color: #56d364; font-size: 11.5px; opacity: 0; transition: opacity .15s; }
+  .bar .done.on { opacity: 1; }
+  pre {
+    flex: 1 1 auto;
+    overflow: auto;
+    margin: 0;
+    padding: 12px 14px 18px;
+    color: #c9d1d9;
+    font-size: 13px;
+    line-height: 1.5;
+    tab-size: 2;
+  }
+  .k { color: #ff7b72; }
+  .s { color: #a5d6ff; }
+  .c { color: #8b949e; font-style: italic; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <span class="name">.github/workflows/bicep.yml</span>
+    <span class="done" id="done">copied</span>
+    <button onclick="copyIt()">copy</button>
+  </div>
+<pre id="code"><span class="k">name:</span> Bicep
+<span class="k">on:</span>
+  <span class="k">pull_request:</span>
+  <span class="k">push:</span>
+    <span class="k">branches:</span> [<span class="s">"main"</span>]
+
+<span class="k">env:</span>
+  <span class="k">CLASS_RG:</span> rg-hyf-students
+
+<span class="k">jobs:</span>
+  <span class="k">what-if:</span>
+    <span class="k">if:</span> github.event_name == <span class="s">'pull_request'</span>
+    <span class="k">runs-on:</span> ubuntu-latest
+    <span class="k">permissions:</span>
+      <span class="k">contents:</span> read
+      <span class="k">pull-requests:</span> write
+    <span class="k">steps:</span>
+      - <span class="k">uses:</span> actions/checkout@v4
+      - <span class="k">uses:</span> azure/login@v2
+        <span class="k">with:</span>
+          <span class="k">creds:</span> ${{ secrets.AZURE_CREDENTIALS }}
+      - <span class="k">name:</span> Preview deployment
+        <span class="k">run:</span> |
+          az deployment group what-if \
+            --resource-group <span class="s">"$CLASS_RG"</span> \
+            --template-file main.bicep \
+            --parameters \
+              storageName=sthyfyourname \
+              dbAdminPassword=not-a-real-secret | tee whatif.txt
+
+      - <span class="k">name:</span> Post the preview on the pull request
+        <span class="k">env:</span>
+          <span class="k">GH_TOKEN:</span> ${{ secrets.GITHUB_TOKEN }}
+        <span class="k">run:</span> |
+          {
+            echo <span class="s">'### Bicep `what-if` preview'</span>
+            echo <span class="s">'```'</span>
+            cat whatif.txt
+            echo <span class="s">'```'</span>
+          } &gt; comment.md
+          gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
+
+  <span class="k">deploy:</span>
+    <span class="k">if:</span> github.ref == <span class="s">'refs/heads/main'</span> &amp;&amp; github.event_name == <span class="s">'push'</span>
+    <span class="k">runs-on:</span> ubuntu-latest
+    <span class="k">steps:</span>
+      - <span class="k">uses:</span> actions/checkout@v4
+      - <span class="k">uses:</span> azure/login@v2
+        <span class="k">with:</span>
+          <span class="k">creds:</span> ${{ secrets.AZURE_CREDENTIALS }}
+      - <span class="k">name:</span> Apply deployment
+        <span class="k">run:</span> |
+          az deployment group create \
+            --resource-group <span class="s">"$CLASS_RG"</span> \
+            --template-file main.bicep \
+            --parameters \
+              storageName=sthyfyourname \
+              dbAdminPassword=not-a-real-secret
+</pre>
+<script>
+  function copyIt() {
+    navigator.clipboard.writeText(document.getElementById('code').innerText).then(() => {
+      const d = document.getElementById('done');
+      d.classList.add('on');
+      setTimeout(() => d.classList.remove('on'), 1200);
+    });
+  }
+</script>
+</body>
+</html>
