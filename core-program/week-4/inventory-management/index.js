@@ -1,1 +1,1 @@
-console.log("Hello");
+// TODO: Import the inventory array from data.js and implement the functions
